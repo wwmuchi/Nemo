@@ -19,11 +19,21 @@ IN_FILE = HERE / "questions-to-review.md"
 OUT_FILE = HERE / "FINAL QUESTIONS.md"
 
 CATEGORY_RE = re.compile(r"^##\s+(.+?)(?:\s+\(\d+\))?\s*$")
-# Lines look like: "- [x] **N.** Question text  _(from: source)_"
+# A line counts as ticked if EITHER:
+#   1. the markdown checkbox is `[x]`        (e.g. "- [x] **1.** ...")
+#   2. the line starts with `x` or `X`        (e.g. "x - [ ] **1.** ...")
+# Captures the question text without numbering prefix and without the
+# trailing "_(from: source)_" tag.
 TICKED_RE = re.compile(
-    r"^\s*-\s*\[x\]\s*(?:\*\*\d+\.\*\*\s*)?(.*?)(?:\s+_\(from:\s*[^)]+\)_)?\s*$",
+    r"^\s*(?:x\s+)?-\s*\[\s*x?\s*\]\s*(?:\*\*\d+\.\*\*\s*)?(.*?)(?:\s+_\(from:\s*[^)]+\)_)?\s*$",
     flags=re.IGNORECASE,
 )
+STARTS_WITH_X_RE = re.compile(r"^\s*x\s+-\s*\[", flags=re.IGNORECASE)
+HAS_BRACKET_X_RE = re.compile(r"^\s*-\s*\[\s*x\s*\]", flags=re.IGNORECASE)
+
+
+def line_is_ticked(line: str) -> bool:
+    return bool(STARTS_WITH_X_RE.match(line) or HAS_BRACKET_X_RE.match(line))
 
 
 def main() -> int:
@@ -39,6 +49,8 @@ def main() -> int:
         cat_match = CATEGORY_RE.match(raw_line)
         if cat_match:
             current_category = cat_match.group(1).strip()
+            continue
+        if not line_is_ticked(raw_line):
             continue
         tick_match = TICKED_RE.match(raw_line)
         if not tick_match:
