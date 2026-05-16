@@ -5,8 +5,8 @@ Fetch quiz questions from open-source political quizzes on GitHub.
 Each entry in QUIZZES points at the raw GitHub URL of the file that contains
 the questions for that quiz, plus the parser used to extract them. The script
 downloads the file, extracts the questions, and saves them per-quiz under
-./fetched/<quiz>.json plus a combined ./fetched/all_questions.json plus a
-deduplicated flat ./fetched/deduped.json.
+./fetched/<quiz>.json plus a combined ./fetched/all_questions.json. The
+deduplicated flat master file is written one level up as ../questions.json.
 
 All listed quizzes are MIT-licensed open source. For closed-source quizzes
 (Political Compass, IDRlabs, Pew, iSideWith, Belief-O-Matic, the Italian VAAs,
@@ -68,7 +68,8 @@ QUIZZES: list[tuple[str, str, str, str, str]] = [
     ),
 ]
 
-OUT_DIR = Path(__file__).parent / "fetched-questions"
+OUT_DIR = Path(__file__).parent / "fetched"
+MASTER_FILE = Path(__file__).parent.parent / "questions.json"
 
 
 def fetch(url: str) -> str | None:
@@ -177,7 +178,7 @@ def main() -> int:
             json.dumps(record, indent=2, ensure_ascii=False), encoding="utf-8"
         )
         combined[name] = record
-        print(f"  ok — {len(questions)} questions saved to fetched/{name}.json")
+        print(f"  ok — {len(questions)} questions saved to {OUT_DIR.name}/{name}.json")
 
     (OUT_DIR / "all_questions.json").write_text(
         json.dumps(combined, indent=2, ensure_ascii=False), encoding="utf-8"
@@ -192,13 +193,14 @@ def main() -> int:
                 continue
             seen.add(key)
             deduped.append({"text": q, "first_seen_in": name})
-    (OUT_DIR / "deduped.json").write_text(
+    MASTER_FILE.write_text(
         json.dumps(deduped, indent=2, ensure_ascii=False), encoding="utf-8"
     )
 
     print()
     print(f"Done. {len(deduped)} unique questions across {len(combined)} quizzes.")
-    print(f"Output dir: {OUT_DIR}")
+    print(f"Master file: {MASTER_FILE}")
+    print(f"Intermediate files: {OUT_DIR}")
     print()
     print("NOTE: Closed-source quizzes (Political Compass, IDRlabs, Pew, iSideWith,")
     print("Belief-O-Matic, and the Italian VAAs) are NOT fetched here — their")
