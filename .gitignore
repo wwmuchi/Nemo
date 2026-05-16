@@ -4,6 +4,14 @@
 .env
 .env.local
 .env.*.local
+.claude_api
+.gemini_api
+.chatgpt_api
+.osm_api
+.grok_api
 
 # Local embedding cache for scoring pipeline (regeneratable)
 scoring_answers/scoring_in_snowflake/.embeddings_cache.pkl
+
+.venv/
+__pycache__/

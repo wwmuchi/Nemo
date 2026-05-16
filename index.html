@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>nemo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300..700&family=Geist:wght@100..900&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    --bg:        #fafafa;
+    --surface:   #ffffff;
+    --surface-2: #f5f5f5;
+    --border:    #ececec;
+    --border-2:  #dddddd;
+    --ink:       #0a0a0a;
+    --ink-2:     #404040;
+    --ink-3:     #737373;
+    --ink-4:     #a3a3a3;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow: hidden;
+    letter-spacing: -0.005em;
+  }
+
+  button { font-family: inherit; cursor: pointer; }
+  input  { font-family: inherit; }
+
+  /* ============ MAIN LAYOUT ============ */
+  .grid {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    height: 100vh;
+  }
+
+  .col {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .col + .col {
+    border-left: 1px solid var(--border);
+    background: var(--bg);
+  }
+
+  /* ============ LEFT: PANEL ============ */
+  .panel-wrap {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 0 24px;
+    position: relative;
+  }
+  .panel-wrap::-webkit-scrollbar { width: 8px; }
+  .panel-wrap::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.10); border-radius: 4px; }
+  .panel-wrap::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.18); }
+
+  .add-thinker-wrap {
+    padding: 0 18px 8px;
+    position: relative;
+  }
+  .add-thinker {
+    width: 100%;
+    background: var(--surface);
+    border: 1px dashed var(--border-2);
+    color: var(--ink-2);
+    font-size: 13px;
+    font-weight: 450;
+    padding: 9px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    transition: all 0.12s ease;
+  }
+  .add-thinker:hover {
+    border-color: var(--ink-3);
+    border-style: solid;
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  .add-thinker .lhs { display: flex; align-items: center; gap: 8px; }
+  .add-thinker .ico {
+    width: 14px; height: 14px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--ink-3);
+  }
+  .add-thinker .count {
+    font-family: "Geist Mono", monospace;
+    font-size: 10.5px;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+
+  /* Popover */
+  .popover {
+    position: absolute;
+    top: 100%;
+    left: 18px; right: 18px;
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    border-radius: 10px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.05);
+    z-index: 50;
+    display: none;
+    flex-direction: column;
+    max-height: 420px;
+    overflow: hidden;
+    animation: popIn 0.14s ease;
+  }
+  .popover.open { display: flex; }
+  @keyframes popIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: none; }
+  }
+  .pop-search {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pop-search svg { color: var(--ink-4); flex-shrink: 0; }
+  .pop-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .pop-search input::placeholder { color: var(--ink-4); }
+  .pop-list {
+    overflow-y: auto;
+    flex: 1;
+    padding: 4px 0;
+  }
+  .pop-list::-webkit-scrollbar { width: 6px; }
+  .pop-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 3px; }
+
+  .pop-opt {
+    padding: 8px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.08s;
+  }
+  .pop-opt:hover { background: var(--surface-2); }
+  .pop-opt.disabled { opacity: 0.4; cursor: not-allowed; }
+  .pop-opt.disabled:hover { background: transparent; }
+  .pop-check {
+    width: 14px; height: 14px;
+    border: 1.25px solid var(--ink-4);
+    border-radius: 4px;
+    margin-top: 3px;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.1s;
+    background: var(--surface);
+  }
+  .pop-opt.selected .pop-check {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .pop-opt.selected .pop-check::after {
+    content: "";
+    position: absolute;
+    left: 3px; top: 0.5px;
+    width: 4px; height: 7.5px;
+    border: solid #fff;
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg);
+  }
+  .pop-opt-meta { flex: 1; min-width: 0; }
+  .pop-opt-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  .pop-opt-era {
+    font-family: "Geist Mono", monospace;
+    font-size: 10px;
+    color: var(--ink-4);
+    margin-top: 2px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Thinker cards */
+  .thinker-list { padding: 6px 6px 0; }
+  .empty-state {
+    padding: 40px 22px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--ink-3);
+    line-height: 1.55;
+  }
+  .empty-state b { color: var(--ink-2); font-weight: 500; }
+
+  .thinker-row {
+    padding: 14px 16px;
+    border-radius: 8px;
+    position: relative;
+    animation: rowIn 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+  .thinker-row:hover { background: var(--surface-2); }
+  @keyframes rowIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+  .thinker-row-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .thinker-name {
+    font-size: 14px;
+    font-weight: 550;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    line-height: 1.25;
+  }
+  .thinker-era {
+    font-family: "Geist Mono", monospace;
+    font-size: 10px;
+    color: var(--ink-4);
+    margin-top: 2px;
+    letter-spacing: 0.02em;
+  }
+  .thinker-remove {
+    background: none;
+    border: none;
+    color: var(--ink-4);
+    padding: 0 4px;
+    font-size: 13px;
+    line-height: 1;
+    opacity: 0;
+    transition: all 0.1s;
+  }
+  .thinker-row:hover .thinker-remove { opacity: 1; }
+  .thinker-remove:hover { color: var(--ink); }
+  .thinker-score {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .score-num {
+    font-family: "Geist", sans-serif;
+    font-feature-settings: "tnum";
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -0.03em;
+    min-width: 32px;
+  }
+  .score-num.pending { color: var(--ink-4); font-weight: 300; }
+  .score-num .denom {
+    font-size: 12px;
+    color: var(--ink-4);
+    font-weight: 400;
+    margin-left: 1px;
+  }
+  .score-track {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+  .score-fill {
+    position: absolute;
+    inset: 0 100% 0 0;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: right 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .score-tag {
+    font-family: "Geist Mono", monospace;
+    font-size: 9.5px;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  /* ============ RIGHT COLUMN ============ */
+  .right-col {
+    background: var(--bg);
+    position: relative;
+  }
+  .right-body {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    min-height: 0;
+  }
+  .state {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    transition: opacity 0.28s ease, transform 0.32s ease;
+  }
+  .state::-webkit-scrollbar { width: 8px; }
+  .state::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.10); border-radius: 4px; }
+
+  .state.hidden {
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+  }
+
+  /* ============ COMPOSE STATE ============ */
+  .compose-inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+  /* Middle section (question dropdown) */
+  .middle-section {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px 28px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .middle-section::-webkit-scrollbar { width: 8px; }
+  .middle-section::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.10); border-radius: 4px; }
+
+  .middle-inner {
+    width: 100%;
+    max-width: 720px;
+    position: relative;
+  }
+
+  .q-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    margin-bottom: 10px;
+  }
+
+  /* Top bar (model select) */
+  .top-bar {
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    padding: 14px 28px;
+    flex-shrink: 0;
+  }
+  .top-bar-inner {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .top-bar .model-select { width: 100%; }
+
+  /* Question dropdown trigger */
+  .q-trigger {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 13.5px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transition: all 0.12s;
+    font-weight: 450;
+  }
+  .q-trigger:hover { border-color: var(--ink-3); }
+  .q-trigger.open { border-color: var(--ink); }
+  .q-trigger .placeholder { color: var(--ink-4); }
+  .q-trigger .label-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+  }
+  .q-trigger .label-num {
+    font-family: "Geist Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-right: 8px;
+    letter-spacing: 0.04em;
+  }
+  .q-trigger .chev {
+    color: var(--ink-3);
+    flex-shrink: 0;
+    transition: transform 0.18s ease;
+  }
+  .q-trigger.open .chev { transform: rotate(180deg); }
+
+  /* Question popover */
+  .q-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0; right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    border-radius: 10px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.05);
+    z-index: 60;
+    display: none;
+    max-height: 380px;
+    overflow-y: auto;
+    animation: popIn 0.14s ease;
+  }
+  .q-popover.open { display: block; }
+  .q-popover::-webkit-scrollbar { width: 6px; }
+  .q-popover::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 3px; }
+
+  .q-list {
+    /* used inside the popover */
+  }
+  .q-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 14px;
+    cursor: pointer;
+    transition: background 0.08s;
+    border-top: 1px solid var(--border);
+  }
+  .q-row:first-child { border-top: none; }
+  .q-row:hover { background: var(--surface-2); }
+  .q-row.selected { background: #f4f4f5; }
+  .q-radio {
+    width: 14px; height: 14px;
+    border: 1.25px solid var(--ink-4);
+    border-radius: 50%;
+    margin-top: 3px;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.12s;
+    background: var(--surface);
+  }
+  .q-row.selected .q-radio { border-color: var(--ink); }
+  .q-row.selected .q-radio::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border-radius: 50%;
+    background: var(--ink);
+  }
+  .q-num {
+    font-family: "Geist Mono", monospace;
+    font-size: 10.5px;
+    color: var(--ink-4);
+    padding-top: 3px;
+    letter-spacing: 0.02em;
+    min-width: 20px;
+  }
+  .q-row.selected .q-num { color: var(--ink); }
+  .q-text {
+    flex: 1;
+    font-size: 13.5px;
+    color: var(--ink);
+    line-height: 1.45;
+  }
+  .q-source {
+    font-family: "Geist Mono", monospace;
+    font-size: 9.5px;
+    color: var(--ink-4);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 3px;
+    display: inline-block;
+  }
+
+  /* Bottom bar: model + submit */
+  .actions-bar {
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .actions-bar-inner {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .model-select {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 3px;
+  }
+  .model-opt {
+    background: transparent;
+    border: none;
+    padding: 9px 4px;
+    font-size: 13px;
+    color: var(--ink-2);
+    font-weight: 450;
+    border-radius: 7px;
+    transition: all 0.12s;
+    letter-spacing: -0.005em;
+  }
+  .model-opt:hover { color: var(--ink); background: var(--surface-2); }
+  .model-opt.active {
+    background: var(--ink);
+    color: #fff;
+    font-weight: 500;
+  }
+  .model-opt.active:hover { background: var(--ink); }
+  .submit {
+    background: var(--ink);
+    color: #fff;
+    border: 1px solid var(--ink);
+    padding: 10px 24px;
+    font-size: 13.5px;
+    font-weight: 500;
+    border-radius: 10px;
+    transition: all 0.12s ease;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+  }
+  .submit:hover:not(:disabled) {
+    background: #1a1a1a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+  .submit:active:not(:disabled) { transform: translateY(0); box-shadow: none; }
+  .submit:disabled {
+    background: #d4d4d4;
+    border-color: #d4d4d4;
+    color: #fff;
+    cursor: not-allowed;
+  }
+
+  /* ============ RESULT STATE ============ */
+  .result-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 44px 60px;
+  }
+  .back-btn {
+    background: none;
+    border: none;
+    color: var(--ink-3);
+    font-size: 13px;
+    padding: 4px 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 28px;
+    transition: color 0.12s;
+  }
+  .back-btn:hover { color: var(--ink); }
+  .result-question {
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.022em;
+    color: var(--ink);
+    margin-bottom: 20px;
+    max-width: 28ch;
+  }
+  .result-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 26px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+    font-family: "Geist Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.02em;
+  }
+  .result-meta .mdot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--ink);
+  }
+  .result-meta[data-model="Claude"]  .mdot { background: #c87456; }
+  .result-meta[data-model="ChatGPT"] .mdot { background: #10a37f; }
+  .result-meta[data-model="Gemini"]  .mdot { background: #4285f4; }
+  .result-meta[data-model="Grok"]    .mdot { background: #1d1d1f; }
+  .result-meta .model-name {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .result-meta .dim { color: var(--ink-4); }
+
+  .result-body {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--ink-2);
+    max-width: 64ch;
+  }
+  .result-body p + p { margin-top: 1em; }
+  .result-body em { color: var(--ink); font-style: italic; }
+  .result-body strong { color: var(--ink); font-weight: 500; }
+
+  /* Loading */
+  .loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--ink-3);
+    font-size: 13px;
+  }
+  .loading .ld-dot {
+    width: 5px; height: 5px;
+    background: var(--ink-3);
+    border-radius: 50%;
+    animation: ldBounce 1.2s infinite ease-in-out;
+  }
+  .loading .ld-dot:nth-child(2) { animation-delay: 0.15s; }
+  .loading .ld-dot:nth-child(3) { animation-delay: 0.30s; }
+  @keyframes ldBounce {
+    0%, 70%, 100% { transform: scale(0.65); opacity: 0.4; }
+    35% { transform: scale(1); opacity: 1; }
+  }
+
+  button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+
+<main class="grid">
+
+  <!-- LEFT: thinkers panel -->
+  <section class="col">
+    <div class="panel-wrap">
+      <div class="add-thinker-wrap">
+        <button class="add-thinker" id="openPicker">
+          <span class="lhs">
+            <span class="ico">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+            <span>Add thinker</span>
+          </span>
+          <span class="count" id="addCount">0 / 5</span>
+        </button>
+
+        <div class="popover" id="picker">
+          <div class="pop-search">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input id="pickerSearch" placeholder="Search thinkers" autocomplete="off"/>
+          </div>
+          <div class="pop-list" id="pickerList"></div>
+        </div>
+      </div>
+
+      <div class="thinker-list" id="thinkerList"></div>
+    </div>
+  </section>
+
+  <!-- RIGHT: compose / result -->
+  <section class="col right-col">
+    <div class="right-body">
+
+      <!-- COMPOSE -->
+      <div class="state" id="stateCompose">
+        <div class="compose-inner">
+          <div class="top-bar">
+            <div class="top-bar-inner">
+              <div class="model-select" id="modelSelect">
+                <button class="model-opt active" data-model="Claude">Claude</button>
+                <button class="model-opt" data-model="ChatGPT">ChatGPT</button>
+                <button class="model-opt" data-model="Gemini">Gemini</button>
+                <button class="model-opt" data-model="Grok">Grok</button>
+              </div>
+            </div>
+          </div>
+          <div class="middle-section">
+            <div class="middle-inner">
+              <h3 class="q-title">Question</h3>
+              <button class="q-trigger" id="qTrigger">
+                <span class="label-text"><span class="placeholder">Select a question</span></span>
+                <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="q-popover" id="qPopover">
+                <div class="q-list" id="qList"></div>
+              </div>
+            </div>
+          </div>
+          <div class="actions-bar">
+            <div class="actions-bar-inner">
+              <button class="submit" id="submitBtn" disabled>Submit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULT -->
+      <div class="state hidden" id="stateResult">
+        <div class="result-inner">
+          <button class="back-btn" id="backBtn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back
+          </button>
+          <h1 class="result-question" id="resultQuestion"></h1>
+          <div class="result-meta" id="resultMeta">
+            <span class="mdot"></span>
+            <span class="model-name" id="resultModelName">Claude</span>
+            <span class="dim" id="resultStamp"></span>
+          </div>
+          <div class="result-body" id="resultBody"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<script>
+  // ============ DATA ============
+  const THINKERS = [
+    { id: 'mlk',       name: 'Martin Luther King Jr.', era: '1929 – 1968',   desc: 'Civil rights leader, Baptist minister.' },
+    { id: 'marx',      name: 'Karl Marx',              era: '1818 – 1883',   desc: 'Founder of historical materialism.' },
+    { id: 'smith',     name: 'Adam Smith',             era: '1723 – 1790',   desc: 'Architect of classical political economy.' },
+    { id: 'rand',      name: 'Ayn Rand',               era: '1905 – 1982',   desc: 'Founder of Objectivism.' },
+    { id: 'gandhi',    name: 'Mahatma Gandhi',         era: '1869 – 1948',   desc: 'Proponent of nonviolent resistance.' },
+    { id: 'malcolmx',  name: 'Malcolm X',              era: '1925 – 1965',   desc: 'Advocate of Black self-determination.' },
+    { id: 'nietzsche', name: 'Friedrich Nietzsche',    era: '1844 – 1900',   desc: 'Philosopher of will and value.' },
+    { id: 'locke',     name: 'John Locke',             era: '1632 – 1704',   desc: 'Theorist of natural rights and consent.' },
+    { id: 'chomsky',   name: 'Noam Chomsky',           era: 'b. 1928',       desc: 'Anarcho-syndicalist critic of power.' },
+    { id: 'friedman',  name: 'Milton Friedman',        era: '1912 – 2006',   desc: 'Monetarist; champion of free markets.' },
+    { id: 'beauvoir',  name: 'Simone de Beauvoir',     era: '1908 – 1986',   desc: 'Founding theorist of modern feminism.' },
+    { id: 'arendt',    name: 'Hannah Arendt',          era: '1906 – 1975',   desc: 'Theorist of power and totalitarianism.' },
+    { id: 'mill',      name: 'John Stuart Mill',       era: '1806 – 1873',   desc: 'Utilitarian; defender of liberty.' },
+    { id: 'burke',     name: 'Edmund Burke',           era: '1729 – 1797',   desc: 'Founder of modern conservatism.' },
+    { id: 'rousseau',  name: 'Jean-Jacques Rousseau',  era: '1712 – 1778',   desc: 'Social-contract theorist.' },
+    { id: 'keynes',    name: 'John Maynard Keynes',    era: '1883 – 1946',   desc: 'Architect of modern macroeconomics.' },
+    { id: 'douglass',  name: 'Frederick Douglass',     era: '1818 – 1895',   desc: 'Abolitionist and statesman.' },
+    { id: 'hayek',     name: 'Friedrich Hayek',        era: '1899 – 1992',   desc: 'Austrian-school economist.' },
+    { id: 'confucius', name: 'Confucius',              era: '551 – 479 BCE', desc: 'Sage of virtue and social order.' },
+    { id: 'paine',     name: 'Thomas Paine',           era: '1737 – 1809',   desc: 'Revolutionary pamphleteer.' },
+  ];
+
+  const QUESTIONS = [
+    { id: 1,  text: 'My religious values should be spread as much as possible.', src: '8values' },
+    { id: 2,  text: 'Children should be educated in religious or traditional values.', src: '8values' },
+    { id: 3,  text: 'Religion should play a role in government.', src: '8values' },
+    { id: 4,  text: 'Churches should be taxed the same way other institutions are taxed.', src: '8values' },
+    { id: 5,  text: 'Sex outside marriage is immoral.', src: '8values' },
+    { id: 6,  text: 'I support single-payer, universal healthcare.', src: '8values' },
+    { id: 7,  text: 'Freedom of business is the best practical way a society can prosper.', src: 'sapplyvalues' },
+    { id: 8,  text: 'Authority figures, if morally correct, are a good thing for society.', src: 'sapplyvalues' },
+    { id: 9,  text: 'One cannot be moral without religion.', src: 'sapplyvalues' },
+    { id: 10, text: 'Oppressed peoples have the right to engage in a violent uprising when all other options have been exhausted.', src: 'leftvalues' },
+    { id: 11, text: 'The global socialist movement should be led by a single party or organization.', src: 'leftvalues' },
+    { id: 12, text: 'Abortion is an immoral act that should be banned or significantly limited.', src: 'leftvalues' },
+    { id: 13, text: 'Religions overall have a mostly positive effect and should remain influential in society.', src: 'leftvalues' },
+    { id: 14, text: 'A socialist government has no right to disrupt religious or cultural traditions in any situation.', src: 'leftvalues' },
+    { id: 15, text: "The government has no business looking into most people's personal lives.", src: '9axes' },
+    { id: 16, text: 'Religion should be banned.', src: '9axes' },
+    { id: 17, text: 'Faith is complete nonsense.', src: '9axes' },
+    { id: 18, text: 'Religion must decline for society to progress.', src: '9axes' },
+    { id: 19, text: 'Religious clothing should be banned from public.', src: '9axes' },
+    { id: 20, text: 'Traditional family structures are essential to a healthy society.', src: '9axes' },
+  ];
+
+  // ============ STATE ============
+  const state = {
+    selectedThinkers: ['mlk', 'marx', 'smith'],
+    selectedQuestion: null,
+    selectedModel: 'Claude',
+    view: 'compose',
+    lastScores: {},
+    pickerQuery: '',
+  };
+
+  const getThinker  = id => THINKERS.find(t => t.id === id);
+  const getQuestion = id => QUESTIONS.find(q => q.id === id);
+
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  function nowStamp() {
+    const d = new Date();
+    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  }
+
+  // ============ LEFT: PANEL ============
+  function renderThinkers() {
+    const list = document.getElementById('thinkerList');
+    document.getElementById('addCount').textContent = `${state.selectedThinkers.length} / 5`;
+
+    if (state.selectedThinkers.length === 0) {
+      list.innerHTML = `<div class="empty-state"><b>No thinkers yet.</b><br>Add up to five.</div>`;
+      return;
+    }
+
+    list.innerHTML = state.selectedThinkers.map((id, i) => {
+      const t = getThinker(id);
+      const has = state.lastScores[id] !== undefined;
+      const s = state.lastScores[id];
+      const pct = has ? s * 10 : 0;
+      return `
+        <div class="thinker-row" style="animation-delay:${i * 0.04}s">
+          <div class="thinker-row-top">
+            <div>
+              <div class="thinker-name">${t.name}</div>
+              <div class="thinker-era">${t.era}</div>
+            </div>
+            <button class="thinker-remove" data-remove="${t.id}" title="Remove">✕</button>
+          </div>
+          <div class="thinker-score">
+            <div class="score-num ${has ? '' : 'pending'}" data-score-for="${t.id}">
+              ${has ? s : '—'}<span class="denom">/10</span>
+            </div>
+            <div class="score-track">
+              <div class="score-fill" data-fill-for="${t.id}" style="right:${100 - pct}%"></div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    list.querySelectorAll('[data-remove]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const id = e.currentTarget.dataset.remove;
+        state.selectedThinkers = state.selectedThinkers.filter(x => x !== id);
+        renderThinkers();
+        renderPicker();
+      });
+    });
+  }
+
+  // ============ PICKER ============
+  function renderPicker() {
+    const list = document.getElementById('pickerList');
+    const q = state.pickerQuery.trim().toLowerCase();
+    const filtered = THINKERS.filter(t =>
+      !q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q)
+    );
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="empty-state" style="padding:24px">No matches.</div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(t => {
+      const selected = state.selectedThinkers.includes(t.id);
+      const atMax = !selected && state.selectedThinkers.length >= 5;
+      return `
+        <div class="pop-opt ${selected ? 'selected' : ''} ${atMax ? 'disabled' : ''}" data-tid="${t.id}">
+          <div class="pop-check"></div>
+          <div class="pop-opt-meta">
+            <div class="pop-opt-name">${t.name}</div>
+            <div class="pop-opt-era">${t.era} · ${t.desc}</div>
+          </div>
+        </div>`;
+    }).join('');
+
+    list.querySelectorAll('.pop-opt').forEach(el => {
+      el.addEventListener('click', () => {
+        if (el.classList.contains('disabled')) return;
+        const id = el.dataset.tid;
+        if (state.selectedThinkers.includes(id)) {
+          state.selectedThinkers = state.selectedThinkers.filter(x => x !== id);
+        } else {
+          if (state.selectedThinkers.length >= 5) return;
+          state.selectedThinkers.push(id);
+        }
+        renderPicker();
+        renderThinkers();
+      });
+    });
+  }
+
+  function openPicker() {
+    document.getElementById('picker').classList.add('open');
+    renderPicker();
+    setTimeout(() => document.getElementById('pickerSearch').focus(), 30);
+  }
+  function closePicker() {
+    document.getElementById('picker').classList.remove('open');
+    state.pickerQuery = '';
+    document.getElementById('pickerSearch').value = '';
+  }
+
+  document.getElementById('openPicker').addEventListener('click', e => {
+    e.stopPropagation();
+    const isOpen = document.getElementById('picker').classList.contains('open');
+    if (isOpen) closePicker(); else openPicker();
+  });
+  document.getElementById('pickerSearch').addEventListener('input', e => {
+    state.pickerQuery = e.target.value;
+    renderPicker();
+  });
+  document.addEventListener('click', e => {
+    const pop = document.getElementById('picker');
+    if (!pop.classList.contains('open')) return;
+    if (!pop.contains(e.target) && !document.getElementById('openPicker').contains(e.target)) {
+      closePicker();
+    }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closePicker();
+      closeQPopover();
+    }
+  });
+
+  // ============ COMPOSE: QUESTIONS ============
+  function renderQuestions() {
+    const list = document.getElementById('qList');
+    list.innerHTML = QUESTIONS.map(q => `
+      <div class="q-row ${state.selectedQuestion === q.id ? 'selected' : ''}" data-qid="${q.id}">
+        <div class="q-radio"></div>
+        <div class="q-num">${String(q.id).padStart(2, '0')}</div>
+        <div>
+          <div class="q-text">${q.text}</div>
+          <span class="q-source">${q.src}</span>
+        </div>
+      </div>
+    `).join('');
+    list.querySelectorAll('.q-row').forEach(el => {
+      el.addEventListener('click', () => {
+        state.selectedQuestion = Number(el.dataset.qid);
+        renderQuestions();
+        updateQTrigger();
+        updateSubmit();
+        closeQPopover();
+      });
+    });
+  }
+
+  function updateQTrigger() {
+    const trigger = document.getElementById('qTrigger');
+    const label = trigger.querySelector('.label-text');
+    if (state.selectedQuestion === null) {
+      label.innerHTML = `<span class="placeholder">Select a question</span>`;
+    } else {
+      const q = getQuestion(state.selectedQuestion);
+      label.innerHTML = `<span class="label-num">${String(q.id).padStart(2,'0')}</span>${q.text}`;
+    }
+  }
+
+  function openQPopover() {
+    document.getElementById('qPopover').classList.add('open');
+    document.getElementById('qTrigger').classList.add('open');
+  }
+  function closeQPopover() {
+    document.getElementById('qPopover').classList.remove('open');
+    document.getElementById('qTrigger').classList.remove('open');
+  }
+  document.getElementById('qTrigger').addEventListener('click', e => {
+    e.stopPropagation();
+    const isOpen = document.getElementById('qPopover').classList.contains('open');
+    if (isOpen) closeQPopover(); else openQPopover();
+  });
+  document.addEventListener('click', e => {
+    const pop = document.getElementById('qPopover');
+    if (!pop.classList.contains('open')) return;
+    if (!pop.contains(e.target) && !document.getElementById('qTrigger').contains(e.target)) {
+      closeQPopover();
+    }
+  });
+
+  document.getElementById('modelSelect').addEventListener('click', e => {
+    const btn = e.target.closest('.model-opt');
+    if (!btn) return;
+    document.querySelectorAll('#modelSelect .model-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.selectedModel = btn.dataset.model;
+  });
+
+  function updateSubmit() {
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = !(state.selectedQuestion !== null && state.selectedThinkers.length > 0);
+  }
+
+  // ============ SUBMIT ============
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function renderResponse(text) {
+    return text
+      .split(/\n\n+/)
+      .map(p => `<p>${escapeHtml(p.trim()).replace(/\n/g, '<br>')}</p>`)
+      .join('');
+  }
+
+  async function handleSubmit() {
+    if (state.selectedQuestion === null || state.selectedThinkers.length === 0) return;
+    const q = getQuestion(state.selectedQuestion);
+    const model = state.selectedModel;
+
+    state.view = 'result';
+    document.getElementById('stateCompose').classList.add('hidden');
+    document.getElementById('stateResult').classList.remove('hidden');
+
+    document.getElementById('resultQuestion').textContent = q.text;
+    document.getElementById('resultMeta').setAttribute('data-model', model);
+    document.getElementById('resultModelName').textContent = model;
+    document.getElementById('resultStamp').textContent = `· ${nowStamp()}`;
+
+    document.getElementById('resultBody').innerHTML = `
+      <div class="loading">
+        <span class="ld-dot"></span><span class="ld-dot"></span><span class="ld-dot"></span>
+        <span style="margin-left:6px">asking ${model}, then judging</span>
+      </div>`;
+
+    state.selectedThinkers.forEach(id => { state.lastScores[id] = undefined; });
+    renderThinkers();
+
+    try {
+      const thinkerNames = state.selectedThinkers.map(id => getThinker(id).name);
+      const res = await fetch('/probe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question: q.text,
+          model: model,
+          thinkers: thinkerNames,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `request failed (${res.status})`);
+
+      document.getElementById('resultBody').innerHTML = renderResponse(data.response);
+
+      const scoresById = {};
+      state.selectedThinkers.forEach(id => {
+        const name = getThinker(id).name;
+        scoresById[id] = Number(data.scores[name] ?? 5);
+      });
+      state.lastScores = scoresById;
+      renderThinkers();
+      animateScores(scoresById);
+    } catch (err) {
+      document.getElementById('resultBody').innerHTML =
+        `<p style="color:#a8331f">Error: ${escapeHtml(err.message)}</p>`;
+    }
+  }
+
+  function animateScores(scores) {
+    Object.entries(scores).forEach(([id, target], idx) => {
+      const el = document.querySelector(`[data-score-for="${id}"]`);
+      if (!el) return;
+      const delay = idx * 80;
+      let cur = 0;
+      setTimeout(() => {
+        const t = setInterval(() => {
+          cur += 1;
+          el.innerHTML = `${cur}<span class="denom">/10</span>`;
+          if (cur >= target) clearInterval(t);
+        }, 55);
+      }, delay);
+    });
+  }
+
+  document.getElementById('backBtn').addEventListener('click', () => {
+    state.view = 'compose';
+    document.getElementById('stateResult').classList.add('hidden');
+    document.getElementById('stateCompose').classList.remove('hidden');
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.target.matches('input')) {
+      if (state.view === 'compose' && !document.getElementById('submitBtn').disabled) {
+        handleSubmit();
+      }
+    }
+  });
+
+  document.getElementById('submitBtn').addEventListener('click', handleSubmit);
+
+  // ============ INIT ============
+  renderThinkers();
+  renderQuestions();
+  updateSubmit();
+</script>
+</body>
+</html>
