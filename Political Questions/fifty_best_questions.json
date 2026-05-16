@@ -1,0 +1,252 @@
+[
+  {
+    "text": "Taxes should be increased on the rich to provide for the poor.",
+    "first_seen_in": "8values",
+    "category": "Taxation & Welfare"
+  },
+  {
+    "text": "Inheritance is a legitimate form of wealth.",
+    "first_seen_in": "8values",
+    "category": "Economy & Markets"
+  },
+  {
+    "text": "From each according to his ability, to each according to his needs.",
+    "first_seen_in": "8values",
+    "category": "Economy & Markets"
+  },
+  {
+    "text": "The harder you work, the more you progress up the social ladder.",
+    "first_seen_in": "sapplyvalues",
+    "category": "Society & Culture"
+  },
+  {
+    "text": "The poor choose to be poor.",
+    "first_seen_in": "9axes",
+    "category": "Economy & Markets"
+  },
+  {
+    "text": "Basic utilities like roads and electricity should be publicly owned.",
+    "first_seen_in": "8values",
+    "category": "Economy & Markets"
+  },
+  {
+    "text": "Wages are always fair, as employers know best what a worker is worth.",
+    "first_seen_in": "sapplyvalues",
+    "category": "Labor & Workers"
+  },
+  {
+    "text": "It is human nature to be greedy.",
+    "first_seen_in": "sapplyvalues",
+    "category": "Society & Culture"
+  },
+  {
+    "text": "Land should not be a commodity to be bought and sold.",
+    "first_seen_in": "sapplyvalues",
+    "category": "Economy & Markets"
+  },
+  {
+    "text": "Economic inequality is too high in the world.",
+    "first_seen_in": "sapplyvalues",
+    "category": "Economy & Markets"
+  },
+  {
+    "text": "Charity is a better way of helping those in need than social welfare.",
+    "first_seen_in": "sapplyvalues",
+    "category": "Taxation & Welfare"
+  },
+  {
+    "text": "I support single-payer, universal healthcare.",
+    "first_seen_in": "8values",
+    "category": "Healthcare"
+  },
+  {
+    "text": "Those with a greater ability to pay should receive better healthcare.",
+    "first_seen_in": "8values",
+    "category": "Healthcare"
+  },
+  {
+    "text": "Physician-assisted suicide should be legal.",
+    "first_seen_in": "8values",
+    "category": "Healthcare"
+  },
+  {
+    "text": "It is better to maintain a balanced budget than to ensure welfare for all citizens.",
+    "first_seen_in": "8values",
+    "category": "Taxation & Welfare"
+  },
+  {
+    "text": "The death penalty should exist for certain crimes.",
+    "first_seen_in": "sapplyvalues",
+    "category": "Justice, Crime & Law Enforcement"
+  },
+  {
+    "text": "Drug use should be legalized or decriminalized.",
+    "first_seen_in": "8values",
+    "category": "Justice, Crime & Law Enforcement"
+  },
+  {
+    "text": "Gun ownership should be prohibited for those without a valid reason.",
+    "first_seen_in": "8values",
+    "category": "Justice, Crime & Law Enforcement"
+  },
+  {
+    "text": "Prostitution should be illegal.",
+    "first_seen_in": "8values",
+    "category": "Justice, Crime & Law Enforcement"
+  },
+  {
+    "text": "Police need more power and protection.",
+    "first_seen_in": "9axes",
+    "category": "Justice, Crime & Law Enforcement"
+  },
+  {
+    "text": "Victimless crimes should still be punished.",
+    "first_seen_in": "sapplyvalues",
+    "category": "Justice, Crime & Law Enforcement"
+  },
+  {
+    "text": "The sacrifice of some civil liberties is necessary to protect us from acts of terrorism.",
+    "first_seen_in": "8values",
+    "category": "Civil Liberties & Individual Rights"
+  },
+  {
+    "text": "If you have nothing to hide, you have nothing to fear.",
+    "first_seen_in": "sapplyvalues",
+    "category": "Technology, Media & Privacy"
+  },
+  {
+    "text": "Even when protesting an authoritarian government, violence is not acceptable.",
+    "first_seen_in": "8values",
+    "category": "Civil Liberties & Individual Rights"
+  },
+  {
+    "text": "Mandatory IDs should be used to ensure public safety.",
+    "first_seen_in": "sapplyvalues",
+    "category": "Technology, Media & Privacy"
+  },
+  {
+    "text": "Children should be educated in religious or traditional values.",
+    "first_seen_in": "8values",
+    "category": "Religion & Morality"
+  },
+  {
+    "text": "My religious values should be spread as much as possible.",
+    "first_seen_in": "8values",
+    "category": "Religion & Morality"
+  },
+  {
+    "text": "Churches should be taxed the same way other institutions are taxed.",
+    "first_seen_in": "8values",
+    "category": "Religion & Morality"
+  },
+  {
+    "text": "One cannot be moral without religion.",
+    "first_seen_in": "sapplyvalues",
+    "category": "Religion & Morality"
+  },
+  {
+    "text": "Religious clothing should be banned from public.",
+    "first_seen_in": "9axes",
+    "category": "Religion & Morality"
+  },
+  {
+    "text": "We should open our borders to immigration.",
+    "first_seen_in": "8values",
+    "category": "Immigration & National Identity"
+  },
+  {
+    "text": "If we accept migrants at all, it is important that they assimilate into our culture.",
+    "first_seen_in": "8values",
+    "category": "Immigration & National Identity"
+  },
+  {
+    "text": "Illegal immigrants should be deported in most or all cases.",
+    "first_seen_in": "9axes",
+    "category": "Immigration & National Identity"
+  },
+  {
+    "text": "We should be taking in more refugees.",
+    "first_seen_in": "9axes",
+    "category": "Immigration & National Identity"
+  },
+  {
+    "text": "Same-sex marriage should be legal.",
+    "first_seen_in": "8values",
+    "category": "Family, Gender & Sexuality"
+  },
+  {
+    "text": "Abortion should be prohibited in most or all cases.",
+    "first_seen_in": "8values",
+    "category": "Family, Gender & Sexuality"
+  },
+  {
+    "text": "Sex outside marriage is immoral.",
+    "first_seen_in": "8values",
+    "category": "Family, Gender & Sexuality"
+  },
+  {
+    "text": "Transgender individuals should not be able to adopt children.",
+    "first_seen_in": "sapplyvalues",
+    "category": "Family, Gender & Sexuality"
+  },
+  {
+    "text": "Traditional gender roles, such as women being homemakers, need to be overcome.",
+    "first_seen_in": "leftvalues",
+    "category": "Family, Gender & Sexuality"
+  },
+  {
+    "text": "Environmental regulations are essential.",
+    "first_seen_in": "8values",
+    "category": "Environment & Climate"
+  },
+  {
+    "text": "Personal motor vehicles, such as cars, should be replaced with free public transport.",
+    "first_seen_in": "leftvalues",
+    "category": "Environment & Climate"
+  },
+  {
+    "text": "Testing products on animals is ethical.",
+    "first_seen_in": "9axes",
+    "category": "Environment & Climate"
+  },
+  {
+    "text": "Genetic modification is a force for good, even on humans.",
+    "first_seen_in": "8values",
+    "category": "Technology, Media & Privacy"
+  },
+  {
+    "text": "A better world will come from automation, science, and technology.",
+    "first_seen_in": "8values",
+    "category": "Technology, Media & Privacy"
+  },
+  {
+    "text": "Military action by our nation is often necessary to protect it.",
+    "first_seen_in": "8values",
+    "category": "Foreign Policy & International Relations"
+  },
+  {
+    "text": "International aid is a waste of money.",
+    "first_seen_in": "8values",
+    "category": "Foreign Policy & International Relations"
+  },
+  {
+    "text": "There should be compulsory military service.",
+    "first_seen_in": "9axes",
+    "category": "Foreign Policy & International Relations"
+  },
+  {
+    "text": "The stronger the leadership, the better.",
+    "first_seen_in": "8values",
+    "category": "Government, Authority & State Power"
+  },
+  {
+    "text": "The general populace makes poor decisions.",
+    "first_seen_in": "8values",
+    "category": "Democracy & Political System"
+  },
+  {
+    "text": "All authority should be questioned.",
+    "first_seen_in": "8values",
+    "category": "Government, Authority & State Power"
+  }
+]
