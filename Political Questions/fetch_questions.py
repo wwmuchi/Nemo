@@ -2,15 +2,15 @@
 """
 Fetch quiz questions from open-source political quizzes on GitHub.
 
-Each entry in QUIZZES points at the raw GitHub URL of the JS file that contains
-the questions array for that quiz. The script downloads the file, extracts the
-questions, and saves them per-quiz under ./fetched/<quiz>.json plus a combined
-./fetched/all_questions.json.
+Each entry in QUIZZES points at the raw GitHub URL of the file that contains
+the questions for that quiz, plus the parser used to extract them. The script
+downloads the file, extracts the questions, and saves them per-quiz under
+./fetched/<quiz>.json plus a combined ./fetched/all_questions.json plus a
+deduplicated flat ./fetched/deduped.json.
 
 All listed quizzes are MIT-licensed open source. For closed-source quizzes
 (Political Compass, IDRlabs, Pew, iSideWith, Belief-O-Matic, the Italian VAAs,
-etc.) you have to copy the questions from each site manually — there is no
-clean automated way to do it.
+etc.) you have to copy the questions from each site manually.
 
 Usage:
     python3 fetch_questions.py
@@ -24,38 +24,47 @@ import sys
 import urllib.request
 from pathlib import Path
 
-# (quiz_name, raw_github_url, license, attribution)
-# All URLs use `HEAD` so they automatically follow each repo's default branch.
-QUIZZES: list[tuple[str, str, str, str]] = [
+# Each quiz: (name, url, license, attribution_url, parser_type)
+#   parser_type:
+#     - "labeled"        — extract `"question": "..."` style entries
+#     - "sentence_array" — extract all double-quoted strings that look like
+#                          sentences from arrays (used by 9axes)
+#     - "json_values"    — fetch JSON, take values of keys starting with "q_"
+QUIZZES: list[tuple[str, str, str, str, str]] = [
     (
         "8values",
         "https://raw.githubusercontent.com/8values/8values.github.io/HEAD/questions.js",
         "MIT",
         "https://github.com/8values/8values.github.io",
+        "labeled",
     ),
     (
         "sapplyvalues",
         "https://raw.githubusercontent.com/SapplyValues/SapplyValues.github.io/HEAD/questions.js",
         "MIT",
         "https://github.com/SapplyValues/SapplyValues.github.io",
+        "labeled",
     ),
     (
         "leftvalues",
-        "https://raw.githubusercontent.com/LeftValues/leftvalues.github.io/HEAD/questions.js",
+        "https://raw.githubusercontent.com/LeftValues/leftvalues.github.io/HEAD/lang/lang_en.json",
         "MIT",
         "https://github.com/LeftValues/leftvalues.github.io",
+        "json_values",
     ),
     (
         "9axes",
         "https://raw.githubusercontent.com/9Axes/9axes.github.io/HEAD/questions.js",
         "MIT",
         "https://github.com/9Axes/9axes.github.io",
+        "sentence_array",
     ),
     (
         "authvalues",
         "https://raw.githubusercontent.com/Pandemik-svg/AuthValues/HEAD/questions.js",
         "MIT",
         "https://github.com/Pandemik-svg/AuthValues",
+        "labeled",
     ),
 ]
 
@@ -72,37 +81,88 @@ def fetch(url: str) -> str | None:
         return None
 
 
-_QUESTION_PATTERN = re.compile(
+_LABELED_PATTERN = re.compile(
     r'["\']?question["\']?\s*:\s*["\']((?:[^"\'\\]|\\.)*)["\']',
     flags=re.IGNORECASE,
 )
+# Match any double-quoted string that looks like a sentence: contains a space,
+# at least one letter, length >= 25, ends with letter/period/?/!.
+_SENTENCE_PATTERN = re.compile(
+    r'"((?:[^"\\]|\\.){25,})"',
+)
 
 
-def extract_questions(js_source: str) -> list[str]:
-    """Pull every `question: "..."` value out of a quiz JS file."""
-    raw = _QUESTION_PATTERN.findall(js_source)
-    cleaned: list[str] = []
-    seen = set()
-    for q in raw:
-        unescaped = bytes(q, "utf-8").decode("unicode_escape", errors="replace").strip()
-        if unescaped and unescaped not in seen:
-            seen.add(unescaped)
-            cleaned.append(unescaped)
-    return cleaned
+def parse_labeled(body: str) -> list[str]:
+    return _dedupe([_unescape(m).strip() for m in _LABELED_PATTERN.findall(body)])
+
+
+def parse_sentence_array(body: str) -> list[str]:
+    out: list[str] = []
+    for m in _SENTENCE_PATTERN.findall(body):
+        s = _unescape(m).strip()
+        if " " in s and any(c.isalpha() for c in s):
+            out.append(s)
+    return _dedupe(out)
+
+
+def parse_json_values(body: str) -> list[str]:
+    try:
+        data = json.loads(body)
+    except json.JSONDecodeError as e:
+        print(f"  ! JSON parse error: {e}")
+        return []
+    out: list[str] = []
+    # LeftValues uses keys like q_0, q_1, ... for question text.
+    for key, val in data.items():
+        if not isinstance(val, str):
+            continue
+        if re.fullmatch(r"q_?\d+", key, flags=re.IGNORECASE) or key.lower().startswith(
+            "question"
+        ):
+            out.append(val.strip())
+    return _dedupe(out)
+
+
+def _unescape(s: str) -> str:
+    try:
+        return bytes(s, "utf-8").decode("unicode_escape", errors="replace")
+    except Exception:
+        return s
+
+
+def _dedupe(items: list[str]) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for s in items:
+        if s and s not in seen:
+            seen.add(s)
+            out.append(s)
+    return out
+
+
+PARSERS = {
+    "labeled": parse_labeled,
+    "sentence_array": parse_sentence_array,
+    "json_values": parse_json_values,
+}
 
 
 def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     combined: dict[str, dict] = {}
 
-    for name, url, license_, attribution in QUIZZES:
+    for name, url, license_, attribution, parser_type in QUIZZES:
         print(f"Fetching {name} ...")
         body = fetch(url)
         if body is None:
             continue
-        questions = extract_questions(body)
+        parser = PARSERS.get(parser_type)
+        if parser is None:
+            print(f"  ! unknown parser type: {parser_type}")
+            continue
+        questions = parser(body)
         if not questions:
-            print(f"  ! no questions parsed — the URL may have changed; inspect: {url}")
+            print(f"  ! no questions parsed — inspect {url}")
             continue
 
         record = {
@@ -123,7 +183,6 @@ def main() -> int:
         json.dumps(combined, indent=2, ensure_ascii=False), encoding="utf-8"
     )
 
-    # Build a deduplicated flat list (case-insensitive match on full text).
     seen: set[str] = set()
     deduped: list[dict] = []
     for name, record in combined.items():
