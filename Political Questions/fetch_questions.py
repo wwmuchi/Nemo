@@ -68,7 +68,7 @@ QUIZZES: list[tuple[str, str, str, str, str]] = [
     ),
 ]
 
-OUT_DIR = Path(__file__).parent / "fetched"
+OUT_DIR = Path(__file__).parent / "fetched-questions"
 
 
 def fetch(url: str) -> str | None:
