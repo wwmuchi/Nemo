@@ -38,7 +38,7 @@ def line_is_ticked(line: str) -> bool:
 
 def main() -> int:
     if not IN_FILE.exists():
-        print(f"! {IN_FILE} not found. Run categorize_questions.py first.")
+        print(f"! {IN_FILE} not found. Run ai_categorize_oneshot.py first.")
         return 1
 
     current_category = "Uncategorized"
