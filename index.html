@@ -42,11 +42,45 @@
   button { font-family: inherit; cursor: pointer; }
   input  { font-family: inherit; }
 
+  /* Homebar (shared across pages) */
+  .homebar {
+    height: 49px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .homebar-brand {
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .homebar-brand .dot { color: var(--ink-4); }
+  .homebar-nav { display: flex; gap: 4px; }
+  .homebar-nav a {
+    color: var(--ink-3);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 7px;
+    transition: all 0.12s;
+  }
+  .homebar-nav a:hover { color: var(--ink); background: var(--surface-2); }
+  .homebar-nav a.active {
+    color: var(--ink);
+    background: var(--surface-2);
+    font-weight: 500;
+  }
+
   /* ============ MAIN LAYOUT ============ */
   .grid {
     display: grid;
     grid-template-columns: 380px 1fr;
-    height: 100vh;
+    height: calc(100vh - 50px);
   }
 
   .col {
@@ -659,6 +693,15 @@
 </head>
 <body>
 
+<nav class="homebar">
+  <div class="homebar-brand">nemo<span class="dot">·</span></div>
+  <div class="homebar-nav">
+    <a href="/" class="active">Probe</a>
+    <a href="/compass/">Compass</a>
+    <a href="/scores/">Scores</a>
+  </div>
+</nav>
+
 <main class="grid">
 
   <!-- LEFT: thinkers panel -->
@@ -749,26 +792,14 @@
 <script>
   // ============ DATA ============
   const THINKERS = [
-    { id: 'mlk',       name: 'Martin Luther King Jr.', era: '1929 – 1968',   desc: 'Civil rights leader, Baptist minister.' },
-    { id: 'marx',      name: 'Karl Marx',              era: '1818 – 1883',   desc: 'Founder of historical materialism.' },
-    { id: 'smith',     name: 'Adam Smith',             era: '1723 – 1790',   desc: 'Architect of classical political economy.' },
-    { id: 'rand',      name: 'Ayn Rand',               era: '1905 – 1982',   desc: 'Founder of Objectivism.' },
-    { id: 'gandhi',    name: 'Mahatma Gandhi',         era: '1869 – 1948',   desc: 'Proponent of nonviolent resistance.' },
-    { id: 'malcolmx',  name: 'Malcolm X',              era: '1925 – 1965',   desc: 'Advocate of Black self-determination.' },
-    { id: 'nietzsche', name: 'Friedrich Nietzsche',    era: '1844 – 1900',   desc: 'Philosopher of will and value.' },
-    { id: 'locke',     name: 'John Locke',             era: '1632 – 1704',   desc: 'Theorist of natural rights and consent.' },
-    { id: 'chomsky',   name: 'Noam Chomsky',           era: 'b. 1928',       desc: 'Anarcho-syndicalist critic of power.' },
-    { id: 'friedman',  name: 'Milton Friedman',        era: '1912 – 2006',   desc: 'Monetarist; champion of free markets.' },
-    { id: 'beauvoir',  name: 'Simone de Beauvoir',     era: '1908 – 1986',   desc: 'Founding theorist of modern feminism.' },
-    { id: 'arendt',    name: 'Hannah Arendt',          era: '1906 – 1975',   desc: 'Theorist of power and totalitarianism.' },
-    { id: 'mill',      name: 'John Stuart Mill',       era: '1806 – 1873',   desc: 'Utilitarian; defender of liberty.' },
-    { id: 'burke',     name: 'Edmund Burke',           era: '1729 – 1797',   desc: 'Founder of modern conservatism.' },
-    { id: 'rousseau',  name: 'Jean-Jacques Rousseau',  era: '1712 – 1778',   desc: 'Social-contract theorist.' },
-    { id: 'keynes',    name: 'John Maynard Keynes',    era: '1883 – 1946',   desc: 'Architect of modern macroeconomics.' },
-    { id: 'douglass',  name: 'Frederick Douglass',     era: '1818 – 1895',   desc: 'Abolitionist and statesman.' },
-    { id: 'hayek',     name: 'Friedrich Hayek',        era: '1899 – 1992',   desc: 'Austrian-school economist.' },
-    { id: 'confucius', name: 'Confucius',              era: '551 – 479 BCE', desc: 'Sage of virtue and social order.' },
-    { id: 'paine',     name: 'Thomas Paine',           era: '1737 – 1809',   desc: 'Revolutionary pamphleteer.' },
+    { id: 'kim',      name: 'Kim Jong Un',              era: 'b. 1984', desc: 'Supreme Leader of North Korea since 2011.' },
+    { id: 'putin',    name: 'Vladimir Putin',           era: 'b. 1952', desc: 'President of Russia; former KGB officer.' },
+    { id: 'trump',    name: 'Donald Trump',             era: 'b. 1946', desc: '45th & 47th President of the United States.' },
+    { id: 'macron',   name: 'Emmanuel Macron',          era: 'b. 1977', desc: 'President of France; centrist liberal.' },
+    { id: 'milei',    name: 'Javier Milei',             era: 'b. 1970', desc: 'President of Argentina; anarcho-capitalist economist.' },
+    { id: 'friedman', name: 'Milton Friedman',          era: '1912 – 2006', desc: 'Monetarist economist; champion of free markets.' },
+    { id: 'mamdani',  name: 'Zohran Mamdani',           era: 'b. 1991', desc: 'NY assemblymember; democratic socialist.' },
+    { id: 'aoc',      name: 'Alexandria Ocasio-Cortez', era: 'b. 1989', desc: 'US representative; democratic socialist.' },
   ];
 
   const QUESTIONS = [
@@ -796,7 +827,7 @@
 
   // ============ STATE ============
   const state = {
-    selectedThinkers: ['mlk', 'marx', 'smith'],
+    selectedThinkers: ['trump', 'aoc', 'friedman'],
     selectedQuestion: null,
     selectedModel: 'Claude',
     view: 'compose',

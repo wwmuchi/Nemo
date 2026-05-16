@@ -31,6 +31,33 @@ def index():
     return send_from_directory(HERE, "index.html")
 
 
+@app.route("/compass")
+@app.route("/compass/")
+def compass():
+    return send_from_directory(os.path.join(HERE, "compass"), "index.html")
+
+
+@app.route("/compass/<path:filename>")
+def compass_assets(filename):
+    return send_from_directory(os.path.join(HERE, "compass"), filename)
+
+
+@app.route("/scores")
+@app.route("/scores/")
+def scores():
+    return send_from_directory(os.path.join(HERE, "scores"), "index.html")
+
+
+@app.route("/scores/<path:filename>")
+def scores_assets(filename):
+    return send_from_directory(os.path.join(HERE, "scores"), filename)
+
+
+@app.route("/images/<path:filename>")
+def shared_images(filename):
+    return send_from_directory(os.path.join(HERE, "images"), filename)
+
+
 @app.route("/probe", methods=["POST"])
 def probe():
     try:

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>nemo · compass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300..700&family=Geist:wght@100..900&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    --bg:        #fafafa;
+    --surface:   #ffffff;
+    --surface-2: #f5f5f5;
+    --border:    #ececec;
+    --border-2:  #dddddd;
+    --ink:       #0a0a0a;
+    --ink-2:     #404040;
+    --ink-3:     #737373;
+    --ink-4:     #a3a3a3;
+    --grid:      #ececec;
+    --axis:      #1a1a1a;
+
+    --c-claude:  #c87456;
+    --c-chatgpt: #10a37f;
+    --c-gemini:  #4285f4;
+    --c-grok:    #1d1d1f;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.005em;
+  }
+  button { font-family: inherit; cursor: pointer; }
+  input  { font-family: inherit; }
+
+  .page {
+    min-height: 100vh;
+    padding: 28px 32px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Homebar (shared across pages) */
+  .homebar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 22px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(250, 250, 250, 0.88);
+    backdrop-filter: saturate(180%) blur(10px);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    margin: -28px -32px 24px;
+  }
+  .homebar-brand {
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .homebar-brand .dot { color: var(--ink-4); }
+  .homebar-nav { display: flex; gap: 4px; }
+  .homebar-nav a {
+    color: var(--ink-3);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 7px;
+    transition: all 0.12s;
+  }
+  .homebar-nav a:hover { color: var(--ink); background: var(--surface-2); }
+  .homebar-nav a.active {
+    color: var(--ink);
+    background: var(--surface-2);
+    font-weight: 500;
+  }
+
+  /* Thinker dropdown */
+  .controls {
+    width: 100%;
+    max-width: 760px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .ctl-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .t-trigger {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 13.5px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transition: all 0.12s;
+    font-weight: 450;
+  }
+  .t-trigger:hover { border-color: var(--ink-3); }
+  .t-trigger.open { border-color: var(--ink); }
+  .t-trigger .placeholder { color: var(--ink-4); }
+  .t-trigger .label-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .t-trigger .trigger-avatar {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .t-trigger .chev {
+    color: var(--ink-3);
+    flex-shrink: 0;
+    transition: transform 0.18s ease;
+  }
+  .t-trigger.open .chev { transform: rotate(180deg); }
+
+  .t-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0; right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    border-radius: 10px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.05);
+    z-index: 60;
+    display: none;
+    max-height: 380px;
+    overflow-y: auto;
+    animation: popIn 0.14s ease;
+  }
+  .t-popover.open { display: block; }
+  @keyframes popIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: none; }
+  }
+  .t-popover::-webkit-scrollbar { width: 6px; }
+  .t-popover::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 3px; }
+
+  .t-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-top: 1px solid var(--border);
+    transition: background 0.08s;
+  }
+  .t-row:first-child { border-top: none; }
+  .t-row:hover { background: var(--surface-2); }
+  .t-row.selected { background: #f4f4f5; }
+  .t-row .avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .t-row .placeholder-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 1px dashed var(--border-2);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: "Geist Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-4);
+  }
+  .t-row .name {
+    flex: 1;
+    font-size: 13.5px;
+    color: var(--ink);
+    font-weight: 450;
+  }
+  .t-row .pos {
+    font-family: "Geist Mono", monospace;
+    font-size: 10.5px;
+    color: var(--ink-4);
+    letter-spacing: 0.02em;
+  }
+
+  /* View toggle */
+  .view-toggle {
+    width: 100%;
+    max-width: 760px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 3px;
+    margin-bottom: 18px;
+  }
+  .view-opt {
+    background: transparent;
+    border: none;
+    padding: 9px 4px;
+    font-size: 13px;
+    color: var(--ink-2);
+    font-weight: 450;
+    border-radius: 7px;
+    transition: all 0.15s ease;
+    letter-spacing: -0.005em;
+  }
+  .view-opt:hover { color: var(--ink); background: var(--surface-2); }
+  .view-opt.active { background: var(--ink); color: #fff; font-weight: 500; }
+  .view-opt[data-view="claude"].active  { background: var(--c-claude); }
+  .view-opt[data-view="chatgpt"].active { background: var(--c-chatgpt); }
+  .view-opt[data-view="gemini"].active  { background: var(--c-gemini); }
+  .view-opt[data-view="grok"].active    { background: var(--c-grok); }
+
+  /* Compass card */
+  .compass-card {
+    width: 100%;
+    max-width: 760px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 18px;
+  }
+  .compass {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* SVG */
+  .gridline { stroke: var(--grid); stroke-width: 1; shape-rendering: crispEdges; }
+  .axis { stroke: var(--axis); stroke-width: 1.25; shape-rendering: crispEdges; }
+  .axis-label {
+    font-family: "Geist Mono", monospace;
+    font-size: 9.5px;
+    fill: var(--ink-3);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .quad-label {
+    font-family: "Geist Mono", monospace;
+    font-size: 8.5px;
+    fill: var(--ink-4);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /* Thinker avatar groups */
+  .thinker-group {
+    transition: transform 0.75s cubic-bezier(0.4, 0.1, 0.2, 1);
+    transform-box: fill-box;
+    cursor: default;
+  }
+  .thinker-ring {
+    fill: none;
+    stroke: var(--ink-3);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+    transition: stroke 0.2s, stroke-width 0.2s;
+  }
+  .thinker-group.target .thinker-ring {
+    stroke: var(--ink);
+    stroke-width: 2.5;
+  }
+  .thinker-label {
+    font-family: "Geist", sans-serif;
+    font-size: 11px;
+    fill: var(--ink-2);
+    font-weight: 500;
+    pointer-events: none;
+    text-anchor: middle;
+  }
+  .thinker-group.target .thinker-label {
+    fill: var(--ink);
+    font-weight: 600;
+  }
+
+  /* Model groups */
+  .model-group {
+    transition: transform 0.95s cubic-bezier(0.4, 0.1, 0.2, 1), opacity 0.4s ease;
+  }
+  .model-group.hidden { opacity: 0; pointer-events: none; }
+  .model-dot-outer { fill: #fff; stroke-width: 1.5; }
+  .model-label {
+    font-family: "Geist", sans-serif;
+    font-size: 11.5px;
+    font-weight: 600;
+    fill: var(--ink);
+    text-shadow:
+      -1.5px -1.5px 0 #fff,
+       1.5px -1.5px 0 #fff,
+      -1.5px  1.5px 0 #fff,
+       1.5px  1.5px 0 #fff;
+    pointer-events: none;
+    letter-spacing: -0.01em;
+    text-anchor: middle;
+  }
+
+  /* Bottom card: legend / scores */
+  .info-card {
+    width: 100%;
+    max-width: 760px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+  }
+  .info-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px;
+  }
+  .info-row.scores { gap: 12px; }
+  .info-eyebrow {
+    font-family: "Geist Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+  }
+  .info-target {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    padding-right: 12px;
+    margin-right: 6px;
+    border-right: 1px solid var(--border-2);
+  }
+  .info-target img {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12.5px;
+    color: var(--ink-2);
+    font-weight: 450;
+  }
+  .legend-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+  }
+  .score-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--ink);
+    padding: 5px 10px;
+    background: var(--surface-2);
+    border-radius: 999px;
+    font-weight: 500;
+  }
+  .score-pill .mdot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+  .score-pill .score-num {
+    font-family: "Geist Mono", monospace;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .score-pill .score-num.dim { color: var(--ink-4); }
+
+  button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <nav class="homebar">
+    <div class="homebar-brand">nemo<span class="dot">·</span></div>
+    <div class="homebar-nav">
+      <a href="/">Probe</a>
+      <a href="/compass/" class="active">Compass</a>
+      <a href="/scores/">Scores</a>
+    </div>
+  </nav>
+
+  <div class="controls">
+    <div class="ctl-title">Emulate</div>
+    <button class="t-trigger" id="tTrigger">
+      <span class="label-text" id="tTriggerLabel">
+        <span class="placeholder">No emulation — show defaults</span>
+      </span>
+      <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="t-popover" id="tPopover"></div>
+  </div>
+
+  <div class="view-toggle" id="viewToggle">
+    <button class="view-opt active" data-view="all">All</button>
+    <button class="view-opt" data-view="claude">Claude</button>
+    <button class="view-opt" data-view="chatgpt">ChatGPT</button>
+    <button class="view-opt" data-view="gemini">Gemini</button>
+    <button class="view-opt" data-view="grok">Grok</button>
+  </div>
+
+  <div class="compass-card">
+    <svg class="compass" viewBox="0 0 640 640" id="compass"></svg>
+  </div>
+
+  <div class="info-card" id="infoCard"></div>
+
+</div>
+
+<script>
+  // ============ DATA ============
+  // x: economic (-10 left … +10 right)   y: social (-10 libertarian … +10 authoritarian)
+  const THINKERS = [
+    { id: 'kim',      name: 'Kim Jong Un',              x: -9.5, y:  9.5, img: '/images/kim.jpg' },
+    { id: 'putin',    name: 'Vladimir Putin',           x: -3.5, y:  9.0, img: '/images/putin.jpg' },
+    { id: 'trump',    name: 'Donald Trump',             x:  9.0, y:  9.0, img: '/images/trump.jpg' },
+    { id: 'macron',   name: 'Emmanuel Macron',          x:  7.0, y:  4.5, img: '/images/macron.jpg' },
+    { id: 'milei',    name: 'Javier Milei',             x: 10.0, y: -3.0, img: '/images/milei.jpg' },
+    { id: 'friedman', name: 'Milton Friedman',          x:  3.0, y: -8.0, img: '/images/friedman.jpg' },
+    { id: 'mamdani',  name: 'Zohran Mamdani',           x: -3.5, y: -3.5, img: '/images/mamdani.jpg' },
+    { id: 'aoc',      name: 'Alexandria Ocasio-Cortez', x: -4.0, y: -3.5, img: '/images/aoc.jpg' },
+  ];
+
+  const MODELS = [
+    { id: 'claude',  name: 'Claude',  color: '#c87456', defaultX: -2.0, defaultY: -2.5 },
+    { id: 'chatgpt', name: 'ChatGPT', color: '#10a37f', defaultX: -1.0, defaultY: -1.5 },
+    { id: 'gemini',  name: 'Gemini',  color: '#4285f4', defaultX:  0.0, defaultY: -1.0 },
+    { id: 'grok',    name: 'Grok',    color: '#1d1d1f', defaultX:  2.5, defaultY: -3.5 },
+  ];
+
+  // ============ STATE ============
+  const state = {
+    target: null,         // thinker id being emulated, or null
+    modelView: 'all',     // 'all' | 'claude' | 'chatgpt' | 'gemini' | 'grok'
+  };
+
+  // ============ COMPASS GEOMETRY ============
+  const CX = 320, CY = 320, UNIT = 28;
+  const svgX = x => CX + x * UNIT;
+  const svgY = y => CY - y * UNIT;
+
+  // ============ HASH-BASED MOCKS ============
+  function hash(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return Math.abs(h);
+  }
+
+  // Mock "emulation skill" 1-10 per (model, thinker).
+  function emulationSkill(model, thinker) {
+    const h = hash(model.id + ':' + thinker.id);
+    return (h % 10) + 1;
+  }
+
+  // Where the model ends up when trying to emulate `thinker`.
+  function emulationPos(model, thinker) {
+    const skill = emulationSkill(model, thinker);
+    const magnitude = (10 - skill) * 0.55;       // skill 10 → 0, skill 1 → 4.95
+    const h2 = hash(model.id + ':' + thinker.id + ':a');
+    const angle = (h2 % 360) * Math.PI / 180;
+    const x = thinker.x + Math.cos(angle) * magnitude;
+    const y = thinker.y + Math.sin(angle) * magnitude;
+    return {
+      x: Math.max(-10, Math.min(10, x)),
+      y: Math.max(-10, Math.min(10, y)),
+    };
+  }
+
+  function getModelPos(model) {
+    if (state.target === null) return { x: model.defaultX, y: model.defaultY };
+    const thinker = THINKERS.find(t => t.id === state.target);
+    return emulationPos(model, thinker);
+  }
+
+  function getModelScore(model) {
+    if (state.target === null) return null;
+    const thinker = THINKERS.find(t => t.id === state.target);
+    return emulationSkill(model, thinker);
+  }
+
+  // ============ RENDER COMPASS ============
+  function renderCompass() {
+    const svg = document.getElementById('compass');
+    const parts = [];
+
+    // <defs> with a circular clipPath for avatars.
+    parts.push(`
+      <defs>
+        <clipPath id="avatarClip"><circle cx="0" cy="0" r="20"/></clipPath>
+      </defs>`);
+
+    // Gridlines every 2 units.
+    for (let v = -10; v <= 10; v += 2) {
+      if (v === 0) continue;
+      parts.push(`<line class="gridline" x1="${svgX(v)}" y1="${svgY(-10)}" x2="${svgX(v)}" y2="${svgY(10)}"/>`);
+      parts.push(`<line class="gridline" x1="${svgX(-10)}" y1="${svgY(v)}" x2="${svgX(10)}" y2="${svgY(v)}"/>`);
+    }
+    parts.push(`<rect class="gridline" x="${svgX(-10)}" y="${svgY(10)}" width="${20*UNIT}" height="${20*UNIT}" fill="none"/>`);
+
+    // Axes.
+    parts.push(`<line class="axis" x1="${svgX(-10)}" y1="${svgY(0)}" x2="${svgX(10)}" y2="${svgY(0)}"/>`);
+    parts.push(`<line class="axis" x1="${svgX(0)}" y1="${svgY(-10)}" x2="${svgX(0)}" y2="${svgY(10)}"/>`);
+
+    // Axis labels.
+    parts.push(`<text class="axis-label" x="${svgX(-10) + 4}" y="${svgY(0) - 6}">Left</text>`);
+    parts.push(`<text class="axis-label" x="${svgX(10) - 4}" y="${svgY(0) - 6}" text-anchor="end">Right</text>`);
+    parts.push(`<text class="axis-label" x="${svgX(0) + 6}" y="${svgY(10) + 12}">Authoritarian</text>`);
+    parts.push(`<text class="axis-label" x="${svgX(0) + 6}" y="${svgY(-10) - 4}">Libertarian</text>`);
+
+    // Quadrant labels.
+    parts.push(`<text class="quad-label" x="${svgX(-9.5)}" y="${svgY(9.2)}">Auth ◂ Left</text>`);
+    parts.push(`<text class="quad-label" x="${svgX(9.5)}"  y="${svgY(9.2)}" text-anchor="end">Auth ▸ Right</text>`);
+    parts.push(`<text class="quad-label" x="${svgX(-9.5)}" y="${svgY(-9.4)}">Lib ◂ Left</text>`);
+    parts.push(`<text class="quad-label" x="${svgX(9.5)}"  y="${svgY(-9.4)}" text-anchor="end">Lib ▸ Right</text>`);
+
+    // Thinker avatars.
+    THINKERS.forEach(t => {
+      const cx = svgX(t.x), cy = svgY(t.y);
+      parts.push(`
+        <g class="thinker-group" id="thinker-${t.id}" style="transform: translate(${cx}px, ${cy}px) scale(1);">
+          <image href="${t.img}" x="-20" y="-20" width="40" height="40" clip-path="url(#avatarClip)" preserveAspectRatio="xMidYMid slice"/>
+          <circle class="thinker-ring" r="20"/>
+          <text class="thinker-label" y="36">${t.name}</text>
+        </g>`);
+    });
+
+    // Models (rendered after thinkers so they sit on top).
+    MODELS.forEach(m => {
+      const p = getModelPos(m);
+      const tx = svgX(p.x), ty = svgY(p.y);
+      parts.push(`
+        <g class="model-group" id="model-${m.id}" transform="translate(${tx}, ${ty})">
+          <circle class="model-dot-outer" r="9" stroke="${m.color}"/>
+          <circle class="model-dot" r="5.5" fill="${m.color}"/>
+          <text class="model-label" y="-14">${m.name}</text>
+        </g>`);
+    });
+
+    svg.innerHTML = parts.join('');
+  }
+
+  // Update model positions and thinker sizing/highlight.
+  function updateView() {
+    // 1. Model positions + visibility.
+    MODELS.forEach(m => {
+      const g = document.getElementById('model-' + m.id);
+      if (!g) return;
+      const p = getModelPos(m);
+      g.setAttribute('transform', `translate(${svgX(p.x)}, ${svgY(p.y)})`);
+      const show = (state.modelView === 'all' || state.modelView === m.id);
+      g.classList.toggle('hidden', !show);
+    });
+
+    // 2. Thinker scaling + target highlight.
+    THINKERS.forEach(t => {
+      const g = document.getElementById('thinker-' + t.id);
+      if (!g) return;
+      const cx = svgX(t.x), cy = svgY(t.y);
+      let scale = 1.0;
+
+      if (state.modelView !== 'all') {
+        // Distance to focused model → scale.
+        const m = MODELS.find(x => x.id === state.modelView);
+        const mp = getModelPos(m);
+        const dist = Math.hypot(t.x - mp.x, t.y - mp.y);
+        const k = Math.min(1, dist / 18);
+        scale = 1.3 - k * 0.6; // 1.3 → 0.7
+      }
+
+      g.style.transform = `translate(${cx}px, ${cy}px) scale(${scale.toFixed(3)})`;
+      g.classList.toggle('target', state.target === t.id);
+    });
+
+    renderInfoCard();
+  }
+
+  // ============ INFO CARD (legend / scores) ============
+  function renderInfoCard() {
+    const card = document.getElementById('infoCard');
+    if (state.target === null) {
+      // Default legend.
+      card.innerHTML = `
+        <div class="info-row">
+          <span class="info-eyebrow">Legend</span>
+          ${MODELS.map(m => `
+            <span class="legend-item">
+              <span class="legend-dot" style="background:${m.color}"></span>${m.name}
+            </span>`).join('')}
+        </div>`;
+    } else {
+      const thinker = THINKERS.find(t => t.id === state.target);
+      const modelsToShow = state.modelView === 'all'
+        ? MODELS
+        : MODELS.filter(m => m.id === state.modelView);
+      card.innerHTML = `
+        <div class="info-row scores">
+          <span class="info-eyebrow">Emulating</span>
+          <span class="info-target">
+            <img src="${thinker.img}" alt=""/>${thinker.name}
+          </span>
+          ${modelsToShow.map(m => {
+            const score = getModelScore(m);
+            return `
+              <span class="score-pill">
+                <span class="mdot" style="background:${m.color}"></span>
+                ${m.name}
+                <span class="score-num">${score}<span class="score-num dim">/10</span></span>
+              </span>`;
+          }).join('')}
+        </div>`;
+    }
+  }
+
+  // ============ THINKER DROPDOWN ============
+  function renderThinkerList() {
+    const pop = document.getElementById('tPopover');
+    const rows = [];
+    rows.push(`
+      <div class="t-row ${state.target === null ? 'selected' : ''}" data-tid="none">
+        <div class="placeholder-avatar">—</div>
+        <div class="name">No emulation — show defaults</div>
+      </div>`);
+    THINKERS.forEach(t => {
+      rows.push(`
+        <div class="t-row ${state.target === t.id ? 'selected' : ''}" data-tid="${t.id}">
+          <img class="avatar" src="${t.img}" alt=""/>
+          <div class="name">${t.name}</div>
+          <div class="pos">(${t.x.toFixed(1)}, ${t.y.toFixed(1)})</div>
+        </div>`);
+    });
+    pop.innerHTML = rows.join('');
+    pop.querySelectorAll('.t-row').forEach(el => {
+      el.addEventListener('click', () => {
+        const raw = el.dataset.tid;
+        state.target = (raw === 'none') ? null : raw;
+        renderThinkerList();
+        updateTrigger();
+        updateView();
+        closePopover();
+      });
+    });
+  }
+  function updateTrigger() {
+    const label = document.getElementById('tTriggerLabel');
+    if (state.target === null) {
+      label.innerHTML = `<span class="placeholder">No emulation — show defaults</span>`;
+    } else {
+      const t = THINKERS.find(x => x.id === state.target);
+      label.innerHTML = `<img class="trigger-avatar" src="${t.img}"/>${t.name}`;
+    }
+  }
+  function openPopover() {
+    document.getElementById('tPopover').classList.add('open');
+    document.getElementById('tTrigger').classList.add('open');
+  }
+  function closePopover() {
+    document.getElementById('tPopover').classList.remove('open');
+    document.getElementById('tTrigger').classList.remove('open');
+  }
+  document.getElementById('tTrigger').addEventListener('click', e => {
+    e.stopPropagation();
+    const open = document.getElementById('tPopover').classList.contains('open');
+    if (open) closePopover(); else openPopover();
+  });
+  document.addEventListener('click', e => {
+    const pop = document.getElementById('tPopover');
+    if (!pop.classList.contains('open')) return;
+    if (!pop.contains(e.target) && !document.getElementById('tTrigger').contains(e.target)) {
+      closePopover();
+    }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closePopover();
+  });
+
+  // ============ VIEW TOGGLE ============
+  document.getElementById('viewToggle').addEventListener('click', e => {
+    const btn = e.target.closest('.view-opt');
+    if (!btn) return;
+    document.querySelectorAll('#viewToggle .view-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.modelView = btn.dataset.view;
+    updateView();
+  });
+
+  // ============ INIT ============
+  renderCompass();
+  renderThinkerList();
+  updateView();
+</script>
+
+</body>
+</html>
