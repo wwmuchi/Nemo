@@ -2,7 +2,12 @@
 """
 One-shot AI categorization. The category for each question (by its
 index in questions.json) was assigned by Claude based on meaning,
-not regex. Re-run this script to regenerate questions-to-review.md.
+not regex. Re-run this script to regenerate questions_categorized.json.
+
+Input : questions.json             (text + first_seen_in, produced by
+                                    sources/fetch_questions.py)
+Output: questions_categorized.json (same entries, same order, with
+                                    a "category" field added)
 """
 
 from __future__ import annotations
@@ -12,7 +17,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 IN_FILE = HERE / "questions.json"
-OUT_FILE = HERE / "questions-to-review.md"
+OUT_FILE = HERE / "questions_categorized.json"
 
 CATEGORY_ORDER = [
     "Religion & Morality",
@@ -479,49 +484,30 @@ def main() -> int:
         )
         return 1
 
-    buckets: dict[str, list[dict]] = {}
+    known = set(CATEGORY_ORDER)
+    out: list[dict] = []
+    counts: dict[str, int] = {}
     for i, entry in enumerate(items):
         cat = CATEGORY_BY_INDEX.get(i, "Uncategorized")
-        buckets.setdefault(cat, []).append(entry)
+        if cat not in known and cat != "Uncategorized":
+            print(f"! Unknown category at index {i}: {cat!r}")
+            return 1
+        out.append({
+            "text": entry["text"],
+            "first_seen_in": entry.get("first_seen_in", ""),
+            "category": cat,
+        })
+        counts[cat] = counts.get(cat, 0) + 1
 
-    order = CATEGORY_ORDER + ["Uncategorized"]
-
-    lines: list[str] = []
-    lines.append("# Questions to Review")
-    lines.append("")
-    lines.append(
-        "Tick `[x]` on the questions you want to keep. Then run "
-        "`extract_selected.py` to copy them into `FINAL QUESTIONS.md`."
+    OUT_FILE.write_text(
+        json.dumps(out, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
     )
-    lines.append("")
-    lines.append(
-        f"Total: **{len(items)} unique questions** across "
-        f"**{len([c for c in order if c in buckets])} categories**."
-    )
-    lines.append("")
-    lines.append("---")
-    lines.append("")
-
-    total_check = 0
-    for cat in order:
-        if cat not in buckets:
-            continue
-        qs = buckets[cat]
-        lines.append(f"## {cat} ({len(qs)})")
-        lines.append("")
-        for i, q in enumerate(qs, 1):
-            text = q["text"].replace("\n", " ").strip()
-            source = q.get("first_seen_in", "?")
-            lines.append(f"- [ ] **{i}.** {text}  _(from: {source})_")
-            total_check += 1
-        lines.append("")
-
-    OUT_FILE.write_text("\n".join(lines), encoding="utf-8")
     print(f"Wrote {OUT_FILE.relative_to(HERE.parent)}")
-    print(
-        f"  {total_check} checkboxes across "
-        f"{len([c for c in order if c in buckets])} categories"
-    )
+    print(f"  {len(out)} questions across {len(counts)} categories:")
+    for cat in CATEGORY_ORDER + ["Uncategorized"]:
+        if cat in counts:
+            print(f"    {counts[cat]:3d}  {cat}")
     return 0
 
 

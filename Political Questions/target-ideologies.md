@@ -1,6 +1,6 @@
 # Target Ideologies — Mapping from Question Categories
 
-This document maps each of the 17 question categories in `questions-to-review.md` to the ideologies they help distinguish. Use it to decide which final outcome labels the quiz should produce and which questions are most useful for telling those outcomes apart.
+This document maps each of the question categories in `questions_categorized.json` to the ideologies they help distinguish. Use it to decide which final outcome labels the quiz should produce and which questions are most useful for telling those outcomes apart.
 
 ---
 
@@ -184,4 +184,4 @@ These can be attached as additional descriptors on top of the primary label:
 
 ## Suggested Next Step
 
-Pick ~10–15 outcome labels from the list above. For each label, decide which 5–10 questions from `questions-to-review.md` are the most diagnostic. The diagnostic questions become the "core" set; the rest become tie-breakers or optional.
+Pick ~10–15 outcome labels from the list above. For each label, decide which 5–10 questions from `questions_categorized.json` are the most diagnostic. The diagnostic questions become the "core" set; the rest become tie-breakers or optional.
