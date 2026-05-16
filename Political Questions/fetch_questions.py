@@ -25,72 +25,43 @@ import urllib.request
 from pathlib import Path
 
 # (quiz_name, raw_github_url, license, attribution)
+# All URLs use `HEAD` so they automatically follow each repo's default branch.
 QUIZZES: list[tuple[str, str, str, str]] = [
     (
         "8values",
-        "https://raw.githubusercontent.com/8values/8values.github.io/master/js/quiz_questions.js",
+        "https://raw.githubusercontent.com/8values/8values.github.io/HEAD/questions.js",
         "MIT",
         "https://github.com/8values/8values.github.io",
     ),
     (
         "sapplyvalues",
-        "https://raw.githubusercontent.com/Sapply/sapplyvalues.github.io/main/js/quiz_questions.js",
+        "https://raw.githubusercontent.com/SapplyValues/SapplyValues.github.io/HEAD/questions.js",
         "MIT",
-        "https://github.com/Sapply/sapplyvalues.github.io",
+        "https://github.com/SapplyValues/SapplyValues.github.io",
     ),
     (
         "leftvalues",
-        "https://raw.githubusercontent.com/LeftValues/leftvalues.github.io/master/js/quiz_questions.js",
+        "https://raw.githubusercontent.com/LeftValues/leftvalues.github.io/HEAD/questions.js",
         "MIT",
         "https://github.com/LeftValues/leftvalues.github.io",
     ),
     (
         "9axes",
-        "https://raw.githubusercontent.com/9Axes/9Axes.github.io/master/js/quiz_questions.js",
+        "https://raw.githubusercontent.com/9Axes/9axes.github.io/HEAD/questions.js",
         "MIT",
-        "https://github.com/9Axes/9Axes.github.io",
-    ),
-    (
-        "libertarianvalues",
-        "https://raw.githubusercontent.com/polittest/libertarianvalues/main/js/quiz_questions.js",
-        "MIT",
-        "https://github.com/polittest/libertarianvalues",
+        "https://github.com/9Axes/9axes.github.io",
     ),
     (
         "authvalues",
-        "https://raw.githubusercontent.com/politicaltests/auth/main/js/quiz_questions.js",
+        "https://raw.githubusercontent.com/Pandemik-svg/AuthValues/HEAD/questions.js",
         "MIT",
-        "https://github.com/politicaltests/auth",
+        "https://github.com/Pandemik-svg/AuthValues",
     ),
     (
         "liberationvalues",
-        "https://raw.githubusercontent.com/liberationvalues/liberationvalues.github.io/main/js/quiz_questions.js",
+        "https://raw.githubusercontent.com/LiberationValues/liberationvalues.github.io/HEAD/questions.js",
         "MIT",
-        "https://github.com/liberationvalues/liberationvalues.github.io",
-    ),
-    (
-        "10groups",
-        "https://raw.githubusercontent.com/10groups/10groups.github.io/main/js/quiz_questions.js",
-        "MIT",
-        "https://github.com/10groups/10groups.github.io",
-    ),
-    (
-        "sixtriangles",
-        "https://raw.githubusercontent.com/sixtriangles/sixtriangles.github.io/main/js/quiz_questions.js",
-        "MIT",
-        "https://github.com/sixtriangles/sixtriangles.github.io",
-    ),
-    (
-        "3axes",
-        "https://raw.githubusercontent.com/3axes/3axes.github.io/main/js/quiz_questions.js",
-        "MIT",
-        "https://github.com/3axes/3axes.github.io",
-    ),
-    (
-        "prismquiz",
-        "https://raw.githubusercontent.com/prismquiz/prismquiz.github.io/main/js/quiz_questions.js",
-        "MIT",
-        "https://github.com/prismquiz/prismquiz.github.io",
+        "https://github.com/LiberationValues/liberationvalues.github.io",
     ),
 ]
 
