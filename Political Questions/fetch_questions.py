@@ -57,12 +57,6 @@ QUIZZES: list[tuple[str, str, str, str]] = [
         "MIT",
         "https://github.com/Pandemik-svg/AuthValues",
     ),
-    (
-        "liberationvalues",
-        "https://raw.githubusercontent.com/LiberationValues/liberationvalues.github.io/HEAD/questions.js",
-        "MIT",
-        "https://github.com/LiberationValues/liberationvalues.github.io",
-    ),
 ]
 
 OUT_DIR = Path(__file__).parent / "fetched"
@@ -79,7 +73,7 @@ def fetch(url: str) -> str | None:
 
 
 _QUESTION_PATTERN = re.compile(
-    r'question\s*:\s*"((?:[^"\\]|\\.)*)"',
+    r'["\']?question["\']?\s*:\s*["\']((?:[^"\'\\]|\\.)*)["\']',
     flags=re.IGNORECASE,
 )
 
