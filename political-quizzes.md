@@ -2,7 +2,7 @@
 
 Below are some quizzes that discern ideology
 
-## Quizzes
+## Quizzes with Questions
 
 - [Pew Research – Political Typology Quiz](https://www.pewresearch.org/politics/quiz/political-typology/)
 - [Your Political Tribe](https://yourpoliticaltribe.com)
@@ -13,3 +13,7 @@ Below are some quizzes that discern ideology
 - [Britain's Choice Quiz](https://www.britainschoice.uk/the-quiz/)
 - [Blossom Up – Political Quiz](https://blossomup.co/lp/political/)
 - [8values Quiz](https://8values.github.io/quiz.html)
+
+
+## Questions We Like
+
