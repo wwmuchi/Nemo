@@ -29,6 +29,24 @@ MAX_TOKENS = 600
 REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "0"))   # optional pacing
 MAX_RETRIES = 4
 
+# Per-provider output-token cap overrides (default = MAX_TOKENS).
+# - gemini: Gemini 2.5 reasoning models include "thinking" tokens in
+#   max_output_tokens. With a 600-token budget the model burns ~580 on
+#   internal reasoning and emits ~10 visible tokens (responses ended
+#   mid-word like "...feeling" / "...isn't"). 3000 leaves ~750 words of
+#   visible output even with full thinking on.
+# - xai (Grok): grok-4 is verbose; ~22% of the original 600-token Grok
+#   responses were truncated mid-sentence at the 460-504 word range. 1500
+#   ≈ 1100 words covers the long tail.
+PROVIDER_MAX_TOKENS = {
+    "gemini": 3000,
+    "xai":    1500,
+}
+
+
+def _max_tokens(provider):
+    return PROVIDER_MAX_TOKENS.get(provider, MAX_TOKENS)
+
 # Model identifiers are env-overridable. VERIFY THESE ARE CURRENT for each
 # provider by running test_connections.py before the hackathon - provider
 # model strings change often.
@@ -70,26 +88,26 @@ def active_models():
 
 
 # --- per-provider calls ------------------------------------------------
-def _call_openai_like(client, model, prompt):
+def _call_openai_like(client, model, prompt, max_tokens):
     r = client.chat.completions.create(
-        model=model, max_tokens=MAX_TOKENS, temperature=0,
+        model=model, max_tokens=max_tokens, temperature=0,
         messages=[{"role": "user", "content": prompt}])
     return r.choices[0].message.content or ""
 
 
-def _call_anthropic(model, prompt):
+def _call_anthropic(model, prompt, max_tokens):
     r = _clients["anthropic"].messages.create(
-        model=model, max_tokens=MAX_TOKENS, temperature=0,
+        model=model, max_tokens=max_tokens, temperature=0,
         messages=[{"role": "user", "content": prompt}])
     parts = [b.text for b in r.content if getattr(b, "type", None) == "text"]
     return "".join(parts)
 
 
-def _call_gemini(model, prompt):
+def _call_gemini(model, prompt, max_tokens):
     m = _clients["gemini"].GenerativeModel(model)
     r = m.generate_content(
         prompt,
-        generation_config={"temperature": 0, "max_output_tokens": MAX_TOKENS})
+        generation_config={"temperature": 0, "max_output_tokens": max_tokens})
     # A safety block leaves .text empty; treat that as an (empty) response,
     # which the judge will read as a refusal - which is correct.
     try:
@@ -99,14 +117,15 @@ def _call_gemini(model, prompt):
 
 
 def dispatch(provider, model, prompt):
+    cap = _max_tokens(provider)
     if provider == "openai":
-        return _call_openai_like(_clients["openai"], model, prompt)
+        return _call_openai_like(_clients["openai"], model, prompt, cap)
     if provider == "xai":
-        return _call_openai_like(_clients["xai"], model, prompt)
+        return _call_openai_like(_clients["xai"], model, prompt, cap)
     if provider == "anthropic":
-        return _call_anthropic(model, prompt)
+        return _call_anthropic(model, prompt, cap)
     if provider == "gemini":
-        return _call_gemini(model, prompt)
+        return _call_gemini(model, prompt, cap)
     raise ValueError(f"unknown provider: {provider}")
 
 
