@@ -1,7 +1,10 @@
 """Nemo backend — serves the UI and runs probes through the selected model + judge."""
 
 import os
+import threading
+import time
 import traceback
+import uuid
 from flask import Flask, request, jsonify, send_from_directory
 
 from probe import (
@@ -24,6 +27,49 @@ MODEL_PROMPT = (
     "agree, disagree, or nuanced — in 3 to 5 sentences. Be direct and substantive.\n\n"
     "\"{question}\""
 )
+
+# ============ Job store ============
+# Jobs run on a background thread so the browser can navigate away and resume.
+JOBS = {}
+JOBS_LOCK = threading.Lock()
+JOB_TTL_SECONDS = 15 * 60  # GC finished jobs after this long
+
+
+def _gc_jobs():
+    now = time.time()
+    with JOBS_LOCK:
+        for jid in list(JOBS.keys()):
+            j = JOBS[jid]
+            if j.get("finished_at") and (now - j["finished_at"]) > JOB_TTL_SECONDS:
+                del JOBS[jid]
+
+
+def _run_probe_job(job_id):
+    with JOBS_LOCK:
+        job = JOBS.get(job_id)
+    if not job:
+        return
+    try:
+        prompt = MODEL_PROMPT.format(question=job["question"])
+        response_text = MODEL_FN[job["model"]](prompt)
+        scores = judge(job["question"], response_text, job["thinkers"])
+        with JOBS_LOCK:
+            j = JOBS.get(job_id)
+            if j is None:
+                return
+            j["response"] = response_text
+            j["scores"] = scores
+            j["status"] = "done"
+            j["finished_at"] = time.time()
+    except Exception as e:
+        traceback.print_exc()
+        with JOBS_LOCK:
+            j = JOBS.get(job_id)
+            if j is None:
+                return
+            j["error"] = str(e)
+            j["status"] = "error"
+            j["finished_at"] = time.time()
 
 
 @app.route("/")
@@ -59,27 +105,51 @@ def shared_images(filename):
 
 
 @app.route("/probe", methods=["POST"])
-def probe():
+def probe_start():
+    """Kick off a probe job on a background thread; return its id immediately."""
     try:
         data = request.get_json(force=True)
-        question = data["question"]
-        model_name = data["model"]
-        thinkers = data["thinkers"]
+        question = data.get("question")
+        model_name = data.get("model")
+        thinkers = data.get("thinkers")
 
         if model_name not in MODEL_FN:
             return jsonify({"error": f"Unknown model: {model_name}"}), 400
         if not thinkers:
             return jsonify({"error": "No thinkers selected"}), 400
 
-        prompt = MODEL_PROMPT.format(question=question)
-        response_text = MODEL_FN[model_name](prompt)
-        scores = judge(question, response_text, thinkers)
+        _gc_jobs()
 
-        return jsonify({"response": response_text, "scores": scores})
+        job_id = uuid.uuid4().hex[:12]
+        with JOBS_LOCK:
+            JOBS[job_id] = {
+                "id": job_id,
+                "status": "running",
+                "question": question,
+                "model": model_name,
+                "thinkers": thinkers,
+                "response": None,
+                "scores": None,
+                "error": None,
+                "started_at": time.time(),
+                "finished_at": None,
+            }
+
+        threading.Thread(target=_run_probe_job, args=(job_id,), daemon=True).start()
+        return jsonify({"job_id": job_id, "status": "running"})
 
     except Exception as e:
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/probe/status/<job_id>")
+def probe_status(job_id):
+    with JOBS_LOCK:
+        job = JOBS.get(job_id)
+    if not job:
+        return jsonify({"error": "unknown job"}), 404
+    return jsonify(job)
 
 
 if __name__ == "__main__":

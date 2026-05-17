@@ -52,20 +52,20 @@
     align-items: center;
   }
 
-  /* Homebar (shared across pages) */
+  /* Homebar (shared across pages — keep identical across probe/compass/scores) */
   .homebar {
     position: sticky;
     top: 0;
     z-index: 100;
+    height: 49px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 22px;
+    padding: 0 22px;
     border-bottom: 1px solid var(--border);
-    background: rgba(250, 250, 250, 0.88);
-    backdrop-filter: saturate(180%) blur(10px);
-    -webkit-backdrop-filter: saturate(180%) blur(10px);
-    margin: -28px -32px 24px;
+    background: var(--surface);
+    flex-shrink: 0;
+    line-height: 1.5;
   }
   .homebar-brand {
     font-weight: 600;
@@ -404,16 +404,16 @@
 </head>
 <body>
 
-<div class="page">
+<nav class="homebar">
+  <div class="homebar-brand">nemo<span class="dot">·</span></div>
+  <div class="homebar-nav">
+    <a href="/">Probe</a>
+    <a href="/compass/" class="active">Compass</a>
+    <a href="/scores/">Scores</a>
+  </div>
+</nav>
 
-  <nav class="homebar">
-    <div class="homebar-brand">nemo<span class="dot">·</span></div>
-    <div class="homebar-nav">
-      <a href="/">Probe</a>
-      <a href="/compass/" class="active">Compass</a>
-      <a href="/scores/">Scores</a>
-    </div>
-  </nav>
+<div class="page">
 
   <div class="controls">
     <div class="ctl-title">Emulate</div>
@@ -445,15 +445,18 @@
 <script>
   // ============ DATA ============
   // x: economic (-10 left … +10 right)   y: social (-10 libertarian … +10 authoritarian)
+  // x, y = true ideological position (used for emulation/distance math).
+  // dispDx, dispDy = visual nudge on the rendered avatar (units), to break overlaps.
+  // labelDy = pixel offset from the avatar centre for the name label (positive = below).
   const THINKERS = [
-    { id: 'kim',      name: 'Kim Jong Un',              x: -9.5, y:  9.5, img: '/images/kim.jpg' },
-    { id: 'putin',    name: 'Vladimir Putin',           x: -3.5, y:  9.0, img: '/images/putin.jpg' },
-    { id: 'trump',    name: 'Donald Trump',             x:  9.0, y:  9.0, img: '/images/trump.jpg' },
-    { id: 'macron',   name: 'Emmanuel Macron',          x:  7.0, y:  4.5, img: '/images/macron.jpg' },
-    { id: 'milei',    name: 'Javier Milei',             x: 10.0, y: -3.0, img: '/images/milei.jpg' },
-    { id: 'friedman', name: 'Milton Friedman',          x:  3.0, y: -8.0, img: '/images/friedman.jpg' },
-    { id: 'mamdani',  name: 'Zohran Mamdani',           x: -3.5, y: -3.5, img: '/images/mamdani.jpg' },
-    { id: 'aoc',      name: 'Alexandria Ocasio-Cortez', x: -4.0, y: -3.5, img: '/images/aoc.jpg' },
+    { id: 'kim',      name: 'Kim Jong Un',              x: -9.5, y:  9.5, img: '/images/kim.jpg', dispDx: 0,    dispDy: 0, labelDy:  36 },
+    { id: 'putin',    name: 'Vladimir Putin',           x: -3.5, y:  9.0, img: '/images/putin.jpg', dispDx: 0,    dispDy: 0, labelDy:  36 },
+    { id: 'trump',    name: 'Donald Trump',             x:  9.0, y:  9.0, img: '/images/trump.jpg', dispDx: 0,    dispDy: 0, labelDy:  36 },
+    { id: 'macron',   name: 'Emmanuel Macron',          x:  7.0, y:  4.5, img: '/images/macron.jpg', dispDx: 0,    dispDy: 0, labelDy:  36 },
+    { id: 'milei',    name: 'Javier Milei',             x: 10.0, y: -3.0, img: '/images/milei.jpg', dispDx: 0,    dispDy: 0, labelDy:  36 },
+    { id: 'friedman', name: 'Milton Friedman',          x:  3.0, y: -8.0, img: '/images/friedman.jpg', dispDx: 0,    dispDy: 0, labelDy: -28 },
+    { id: 'mamdani',  name: 'Zohran Mamdani',           x: -3.5, y: -3.5, img: '/images/mamdani.jpg', dispDx: -1.1, dispDy: 0, labelDy: -28 },
+    { id: 'aoc',      name: 'Alexandria Ocasio-Cortez', x: -4.0, y: -3.5, img: '/images/aoc.jpg', dispDx:  1.1, dispDy: 0, labelDy:  36 },
   ];
 
   const MODELS = [
@@ -551,14 +554,16 @@
     parts.push(`<text class="quad-label" x="${svgX(-9.5)}" y="${svgY(-9.4)}">Lib ◂ Left</text>`);
     parts.push(`<text class="quad-label" x="${svgX(9.5)}"  y="${svgY(-9.4)}" text-anchor="end">Lib ▸ Right</text>`);
 
-    // Thinker avatars.
+    // Thinker avatars (display position = true position + display nudge).
     THINKERS.forEach(t => {
-      const cx = svgX(t.x), cy = svgY(t.y);
+      const cx = svgX(t.x + (t.dispDx || 0));
+      const cy = svgY(t.y + (t.dispDy || 0));
+      const ly = t.labelDy ?? 36;
       parts.push(`
         <g class="thinker-group" id="thinker-${t.id}" style="transform: translate(${cx}px, ${cy}px) scale(1);">
           <image href="${t.img}" x="-20" y="-20" width="40" height="40" clip-path="url(#avatarClip)" preserveAspectRatio="xMidYMid slice"/>
           <circle class="thinker-ring" r="20"/>
-          <text class="thinker-label" y="36">${t.name}</text>
+          <text class="thinker-label" y="${ly}">${t.name}</text>
         </g>`);
     });
 
@@ -593,11 +598,12 @@
     THINKERS.forEach(t => {
       const g = document.getElementById('thinker-' + t.id);
       if (!g) return;
-      const cx = svgX(t.x), cy = svgY(t.y);
+      const cx = svgX(t.x + (t.dispDx || 0));
+      const cy = svgY(t.y + (t.dispDy || 0));
       let scale = 1.0;
 
       if (state.modelView !== 'all') {
-        // Distance to focused model → scale.
+        // Distance to focused model uses TRUE position (x, y), not the display nudge.
         const m = MODELS.find(x => x.id === state.modelView);
         const mp = getModelPos(m);
         const dist = Math.hypot(t.x - mp.x, t.y - mp.y);

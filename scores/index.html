@@ -40,19 +40,20 @@
   button { font-family: inherit; cursor: pointer; }
   img { display: block; }
 
-  /* Homebar */
+  /* Homebar (shared across pages — keep identical across probe/compass/scores) */
   .homebar {
     position: sticky;
     top: 0;
     z-index: 100;
+    height: 49px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 22px;
+    padding: 0 22px;
     border-bottom: 1px solid var(--border);
-    background: rgba(250, 250, 250, 0.88);
-    backdrop-filter: saturate(180%) blur(10px);
-    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    background: var(--surface);
+    flex-shrink: 0;
+    line-height: 1.5;
   }
   .homebar-brand {
     font-weight: 600;

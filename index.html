@@ -42,8 +42,11 @@
   button { font-family: inherit; cursor: pointer; }
   input  { font-family: inherit; }
 
-  /* Homebar (shared across pages) */
+  /* Homebar (shared across pages — keep identical across probe/compass/scores) */
   .homebar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     height: 49px;
     display: flex;
     justify-content: space-between;
@@ -52,6 +55,7 @@
     border-bottom: 1px solid var(--border);
     background: var(--surface);
     flex-shrink: 0;
+    line-height: 1.5;
   }
   .homebar-brand {
     font-weight: 600;
@@ -833,7 +837,10 @@
     view: 'compose',
     lastScores: {},
     pickerQuery: '',
+    currentJobId: null,
   };
+
+  const JOB_KEY = 'nemo:job';
 
   const getThinker  = id => THINKERS.find(t => t.id === id);
   const getQuestion = id => QUESTIONS.find(q => q.id === id);
@@ -1034,7 +1041,7 @@
     btn.disabled = !(state.selectedQuestion !== null && state.selectedThinkers.length > 0);
   }
 
-  // ============ SUBMIT ============
+  // ============ SUBMIT (background job + poll, resumable across navigation) ============
   function escapeHtml(s) {
     return String(s)
       .replace(/&/g, '&amp;')
@@ -1049,26 +1056,73 @@
       .join('');
   }
 
-  async function handleSubmit() {
-    if (state.selectedQuestion === null || state.selectedThinkers.length === 0) return;
-    const q = getQuestion(state.selectedQuestion);
-    const model = state.selectedModel;
-
+  function showResultLoading(questionText, model) {
     state.view = 'result';
     document.getElementById('stateCompose').classList.add('hidden');
     document.getElementById('stateResult').classList.remove('hidden');
-
-    document.getElementById('resultQuestion').textContent = q.text;
+    document.getElementById('resultQuestion').textContent = questionText;
     document.getElementById('resultMeta').setAttribute('data-model', model);
     document.getElementById('resultModelName').textContent = model;
     document.getElementById('resultStamp').textContent = `· ${nowStamp()}`;
-
     document.getElementById('resultBody').innerHTML = `
       <div class="loading">
         <span class="ld-dot"></span><span class="ld-dot"></span><span class="ld-dot"></span>
         <span style="margin-left:6px">asking ${model}, then judging</span>
       </div>`;
+  }
 
+  function applyJobResult(data) {
+    document.getElementById('resultBody').innerHTML = renderResponse(data.response);
+    const scoresById = {};
+    state.selectedThinkers.forEach(id => {
+      const thinker = getThinker(id);
+      if (!thinker) return;
+      scoresById[id] = Number(data.scores?.[thinker.name] ?? 5);
+    });
+    state.lastScores = scoresById;
+    renderThinkers();
+    animateScores(scoresById);
+  }
+
+  async function pollJob(jobId) {
+    while (true) {
+      let res;
+      try {
+        res = await fetch(`/probe/status/${jobId}`);
+      } catch {
+        await wait(2000);
+        continue; // network blip, retry
+      }
+      if (state.currentJobId !== jobId) return;     // superseded by a newer submit
+      if (!res.ok) {
+        localStorage.removeItem(JOB_KEY);
+        document.getElementById('resultBody').innerHTML =
+          `<p style="color:#a8331f">Job expired or server restarted. Try again.</p>`;
+        return;
+      }
+      const data = await res.json();
+      if (state.currentJobId !== jobId) return;
+      if (data.status === 'done') {
+        localStorage.removeItem(JOB_KEY);
+        applyJobResult(data);
+        return;
+      }
+      if (data.status === 'error') {
+        localStorage.removeItem(JOB_KEY);
+        document.getElementById('resultBody').innerHTML =
+          `<p style="color:#a8331f">Error: ${escapeHtml(data.error || 'unknown')}</p>`;
+        return;
+      }
+      await wait(1500);
+    }
+  }
+
+  async function handleSubmit() {
+    if (state.selectedQuestion === null || state.selectedThinkers.length === 0) return;
+    const q = getQuestion(state.selectedQuestion);
+    const model = state.selectedModel;
+
+    showResultLoading(q.text, model);
     state.selectedThinkers.forEach(id => { state.lastScores[id] = undefined; });
     renderThinkers();
 
@@ -1077,29 +1131,53 @@
       const res = await fetch('/probe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          question: q.text,
-          model: model,
-          thinkers: thinkerNames,
-        }),
+        body: JSON.stringify({ question: q.text, model, thinkers: thinkerNames }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `request failed (${res.status})`);
 
-      document.getElementById('resultBody').innerHTML = renderResponse(data.response);
+      state.currentJobId = data.job_id;
+      localStorage.setItem(JOB_KEY, JSON.stringify({
+        jobId: data.job_id,
+        questionId: q.id,
+        model,
+        thinkerIds: [...state.selectedThinkers],
+      }));
 
-      const scoresById = {};
-      state.selectedThinkers.forEach(id => {
-        const name = getThinker(id).name;
-        scoresById[id] = Number(data.scores[name] ?? 5);
-      });
-      state.lastScores = scoresById;
-      renderThinkers();
-      animateScores(scoresById);
+      await pollJob(data.job_id);
     } catch (err) {
       document.getElementById('resultBody').innerHTML =
         `<p style="color:#a8331f">Error: ${escapeHtml(err.message)}</p>`;
     }
+  }
+
+  function resumeActiveJob() {
+    const stored = localStorage.getItem(JOB_KEY);
+    if (!stored) return;
+    let meta;
+    try { meta = JSON.parse(stored); } catch { localStorage.removeItem(JOB_KEY); return; }
+    if (!meta || !meta.jobId) { localStorage.removeItem(JOB_KEY); return; }
+
+    if (Array.isArray(meta.thinkerIds) && meta.thinkerIds.length) {
+      state.selectedThinkers = meta.thinkerIds.filter(id => getThinker(id));
+    }
+    if (meta.model) state.selectedModel = meta.model;
+    if (meta.questionId != null) state.selectedQuestion = meta.questionId;
+
+    document.querySelectorAll('#modelSelect .model-opt').forEach(b => {
+      b.classList.toggle('active', b.dataset.model === state.selectedModel);
+    });
+
+    renderThinkers();
+    renderQuestions();
+    updateQTrigger();
+    updateSubmit();
+
+    const q = getQuestion(state.selectedQuestion);
+    if (!q) { localStorage.removeItem(JOB_KEY); return; }
+    state.currentJobId = meta.jobId;
+    showResultLoading(q.text, state.selectedModel);
+    pollJob(meta.jobId);
   }
 
   function animateScores(scores) {
@@ -1138,6 +1216,7 @@
   renderThinkers();
   renderQuestions();
   updateSubmit();
+  resumeActiveJob();
 </script>
 </body>
 </html>
