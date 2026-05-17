@@ -4,3 +4,6 @@
 .env
 .env.local
 .env.*.local
+
+# Local embedding cache for scoring pipeline (regeneratable)
+scoring_answers/scoring_in_snowflake/.embeddings_cache.pkl
