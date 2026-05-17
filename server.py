@@ -1,5 +1,7 @@
 """Nemo backend — serves the UI and runs probes through the selected model + judge."""
 
+import csv
+import json
 import os
 import threading
 import time
@@ -13,6 +15,7 @@ from probe import (
 )
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+DATA_ROOT = os.path.join(HERE, "political_questions")
 app = Flask(__name__, static_folder=None)
 
 MODEL_FN = {
@@ -21,6 +24,14 @@ MODEL_FN = {
     "Gemini":  ask_gemini,
     "Grok":    ask_grok,
 }
+
+# id → display name. Keep ids lowercase to match the CSV's `model` column.
+KNOWN_MODELS = [
+    ("claude",  "Claude"),
+    ("chatgpt", "ChatGPT"),
+    ("gemini",  "Gemini"),
+    ("grok",    "Grok"),
+]
 
 MODEL_PROMPT = (
     "Below is a political/ideological statement. Briefly share your honest view on it — "
@@ -150,6 +161,74 @@ def probe_status(job_id):
     if not job:
         return jsonify({"error": "unknown job"}), 404
     return jsonify(job)
+
+
+# ============ /api/* — read-only data endpoints sourced from political_questions/ ============
+
+def _load_thinkers() -> list[dict]:
+    with open(os.path.join(DATA_ROOT, "site_assets", "thinkers.json")) as f:
+        return json.load(f)
+
+
+@app.route("/api/thinkers")
+def api_thinkers():
+    return jsonify(_load_thinkers())
+
+
+@app.route("/api/questions")
+def api_questions():
+    path = os.path.join(DATA_ROOT, "transforming_questions", "fifty_best_questions_transformed.json")
+    with open(path) as f:
+        raw = json.load(f)
+    out = [
+        {
+            "id": i + 1,
+            "text": q["text"],
+            "source": q.get("first_seen_in"),
+            "category": q.get("category"),
+            "scenario": q.get("scenario"),
+        }
+        for i, q in enumerate(raw)
+    ]
+    return jsonify(out)
+
+
+@app.route("/api/models")
+def api_models():
+    thinkers = _load_thinkers()
+    csv_path = os.path.join(DATA_ROOT, "plotting_main_bots", "model_coordinates.csv")
+    rows_by_id: dict[str, dict] = {}
+    with open(csv_path) as f:
+        for row in csv.DictReader(f):
+            rows_by_id[row["model"].strip().lower()] = row
+
+    out = []
+    for mid, name in KNOWN_MODELS:
+        row = rows_by_id.get(mid)
+        if row is None:
+            out.append({
+                "id": mid,
+                "name": name,
+                "econ_x": 0.0,
+                "social_y": 0.0,
+                "scores": {t["id"]: None for t in thinkers},
+                "has_signal": False,
+            })
+            continue
+        scores = {}
+        for t in thinkers:
+            col = f"mean_{t['bot_col']}"
+            v = row.get(col, "")
+            scores[t["id"]] = float(v) if v != "" else None
+        out.append({
+            "id": mid,
+            "name": name,
+            "econ_x": float(row["econ_x"]),
+            "social_y": float(row["social_y"]),
+            "scores": scores,
+            "has_signal": True,
+        })
+    return jsonify(out)
 
 
 if __name__ == "__main__":

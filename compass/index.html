@@ -417,17 +417,6 @@
 
 <div class="page">
 
-  <div class="controls" style="display:none">
-    <div class="ctl-title">Emulate</div>
-    <button class="t-trigger" id="tTrigger">
-      <span class="label-text" id="tTriggerLabel">
-        <span class="placeholder">No emulation — show defaults</span>
-      </span>
-      <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-    </button>
-    <div class="t-popover" id="tPopover"></div>
-  </div>
-
   <div class="view-toggle" id="viewToggle">
     <button class="view-opt active" data-view="all">All</button>
     <button class="view-opt" data-view="claude">Claude</button>
@@ -445,32 +434,20 @@
 </div>
 
 <script>
-  // ============ DATA ============
-  // x: economic (-10 left … +10 right)   y: social (-10 libertarian … +10 authoritarian)
-  // x, y = true ideological position (used for emulation/distance math).
-  // dispDx, dispDy = visual nudge on the rendered avatar (units), to break overlaps.
-  // labelDy = pixel offset from the avatar centre for the name label (positive = below).
-  const THINKERS = [
-    { id: 'kim',      name: 'Kim Jong Un',              x: -9.5, y:  9.5, img: '/images/kim.jpg', dispDx: 0,    dispDy: 0, labelDy:  36 },
-    { id: 'putin',    name: 'Vladimir Putin',           x: -3.5, y:  9.0, img: '/images/putin.jpg', dispDx: 0,    dispDy: 0, labelDy:  36 },
-    { id: 'trump',    name: 'Donald Trump',             x:  9.0, y:  9.0, img: '/images/trump.jpg', dispDx: 0,    dispDy: 0, labelDy:  36 },
-    { id: 'macron',   name: 'Emmanuel Macron',          x:  7.0, y:  4.5, img: '/images/macron.jpg', dispDx: 0,    dispDy: 0, labelDy:  36 },
-    { id: 'milei',    name: 'Javier Milei',             x: 10.0, y: -3.0, img: '/images/milei.jpg', dispDx: 0,    dispDy: 0, labelDy:  36 },
-    { id: 'friedman', name: 'Milton Friedman',          x:  3.0, y: -8.0, img: '/images/friedman.jpg', dispDx: 0,    dispDy: 0, labelDy: -28 },
-    { id: 'mamdani',  name: 'Zohran Mamdani',           x: -3.5, y: -3.5, img: '/images/mamdani.jpg', dispDx: -1.1, dispDy: 0, labelDy: -28 },
-    { id: 'aoc',      name: 'Alexandria Ocasio-Cortez', x: -4.0, y: -3.5, img: '/images/aoc.jpg', dispDx:  1.1, dispDy: 0, labelDy:  36 },
-  ];
+  // ============ DATA (loaded from /api/* — see init below) ============
+  let THINKERS = [];
+  let MODELS = [];
 
-  const MODELS = [
-    { id: 'claude',  name: 'Claude',  color: '#c87456', defaultX: 1.202, defaultY: 1.722 },
-    { id: 'chatgpt', name: 'ChatGPT', color: '#10a37f', defaultX: 0.163, defaultY: 2.556 },
-    { id: 'gemini',  name: 'Gemini',  color: '#4285f4', defaultX: 0.731, defaultY: 2.908 },
-    { id: 'grok',    name: 'Grok',    color: '#1d1d1f', defaultX: 4.195, defaultY: 2.777 },
-  ];
+  // Brand colors are presentation, not data — kept in the page.
+  const MODEL_COLOR = {
+    claude:  '#ff8a65',
+    chatgpt: '#1ee0a4',
+    gemini:  '#6ab7ff',
+    grok:    '#e53e3e',
+  };
 
   // ============ STATE ============
   const state = {
-    target: null,         // thinker id being emulated, or null
     modelView: 'all',     // 'all' | 'claude' | 'chatgpt' | 'gemini' | 'grok'
   };
 
@@ -478,48 +455,6 @@
   const CX = 320, CY = 320, UNIT = 28;
   const svgX = x => CX + x * UNIT;
   const svgY = y => CY - y * UNIT;
-
-  // ============ HASH-BASED MOCKS ============
-  function hash(str) {
-    let h = 2166136261;
-    for (let i = 0; i < str.length; i++) {
-      h ^= str.charCodeAt(i);
-      h = Math.imul(h, 16777619);
-    }
-    return Math.abs(h);
-  }
-
-  // Mock "emulation skill" 1-10 per (model, thinker).
-  function emulationSkill(model, thinker) {
-    const h = hash(model.id + ':' + thinker.id);
-    return (h % 10) + 1;
-  }
-
-  // Where the model ends up when trying to emulate `thinker`.
-  function emulationPos(model, thinker) {
-    const skill = emulationSkill(model, thinker);
-    const magnitude = (10 - skill) * 0.55;       // skill 10 → 0, skill 1 → 4.95
-    const h2 = hash(model.id + ':' + thinker.id + ':a');
-    const angle = (h2 % 360) * Math.PI / 180;
-    const x = thinker.x + Math.cos(angle) * magnitude;
-    const y = thinker.y + Math.sin(angle) * magnitude;
-    return {
-      x: Math.max(-10, Math.min(10, x)),
-      y: Math.max(-10, Math.min(10, y)),
-    };
-  }
-
-  function getModelPos(model) {
-    if (state.target === null) return { x: model.defaultX, y: model.defaultY };
-    const thinker = THINKERS.find(t => t.id === state.target);
-    return emulationPos(model, thinker);
-  }
-
-  function getModelScore(model) {
-    if (state.target === null) return null;
-    const thinker = THINKERS.find(t => t.id === state.target);
-    return emulationSkill(model, thinker);
-  }
 
   // ============ RENDER COMPASS ============
   function renderCompass() {
@@ -558,12 +493,12 @@
 
     // Thinker avatars (display position = true position + display nudge).
     THINKERS.forEach(t => {
-      const cx = svgX(t.x + (t.dispDx || 0));
-      const cy = svgY(t.y + (t.dispDy || 0));
-      const ly = t.labelDy ?? 36;
+      const cx = svgX(t.compass_x + (t.disp_dx || 0));
+      const cy = svgY(t.compass_y + (t.disp_dy || 0));
+      const ly = t.label_dy ?? 36;
       parts.push(`
         <g class="thinker-group" id="thinker-${t.id}" style="transform: translate(${cx}px, ${cy}px) scale(1);">
-          <image href="${t.img}" x="-20" y="-20" width="40" height="40" clip-path="url(#avatarClip)" preserveAspectRatio="xMidYMid slice"/>
+          <image href="${t.image}" x="-20" y="-20" width="40" height="40" clip-path="url(#avatarClip)" preserveAspectRatio="xMidYMid slice"/>
           <circle class="thinker-ring" r="20"/>
           <text class="thinker-label" y="${ly}">${t.name}</text>
         </g>`);
@@ -571,153 +506,72 @@
 
     // Models (rendered after thinkers so they sit on top).
     MODELS.forEach(m => {
-      const p = getModelPos(m);
-      const tx = svgX(p.x), ty = svgY(p.y);
+      const tx = svgX(m.econ_x), ty = svgY(m.social_y);
+      const dim = !m.has_signal;
+      const stroke = dim ? 'rgba(255,255,255,0.55)' : m.color;
+      const fill   = dim ? 'rgba(180,180,180,0.55)' : m.color;
+      const opacity = dim ? 0.55 : 1;
+      const tooltip = dim
+        ? `<title>${m.name}: no ideological signal — answered neutrally on every probe question.</title>`
+        : '';
       parts.push(`
-        <g class="model-group" id="model-${m.id}" transform="translate(${tx}, ${ty})">
-          <circle class="model-dot-outer" r="9" stroke="${m.color}"/>
-          <circle class="model-dot" r="5.5" fill="${m.color}"/>
-          <text class="model-label" y="-14">${m.name}</text>
+        <g class="model-group ${dim ? 'no-signal' : ''}" id="model-${m.id}" transform="translate(${tx}, ${ty})" style="opacity:${opacity}">
+          ${tooltip}
+          <circle class="model-dot-outer" r="9" stroke="${stroke}"/>
+          <circle class="model-dot" r="5.5" fill="${fill}"/>
+          <text class="model-label" y="-14">${m.name}${dim ? ' *' : ''}</text>
         </g>`);
     });
 
     svg.innerHTML = parts.join('');
   }
 
-  // Update model positions and thinker sizing/highlight.
+  // Toggle model visibility + scale thinkers by distance to the focused model.
   function updateView() {
-    // 1. Model positions + visibility.
     MODELS.forEach(m => {
       const g = document.getElementById('model-' + m.id);
       if (!g) return;
-      const p = getModelPos(m);
-      g.setAttribute('transform', `translate(${svgX(p.x)}, ${svgY(p.y)})`);
       const show = (state.modelView === 'all' || state.modelView === m.id);
       g.classList.toggle('hidden', !show);
     });
 
-    // 2. Thinker scaling + target highlight.
     THINKERS.forEach(t => {
       const g = document.getElementById('thinker-' + t.id);
       if (!g) return;
-      const cx = svgX(t.x + (t.dispDx || 0));
-      const cy = svgY(t.y + (t.dispDy || 0));
+      const cx = svgX(t.compass_x + (t.disp_dx || 0));
+      const cy = svgY(t.compass_y + (t.disp_dy || 0));
       let scale = 1.0;
 
       if (state.modelView !== 'all') {
-        // Distance to focused model uses TRUE position (x, y), not the display nudge.
         const m = MODELS.find(x => x.id === state.modelView);
-        const mp = getModelPos(m);
-        const dist = Math.hypot(t.x - mp.x, t.y - mp.y);
-        const k = Math.min(1, dist / 18);
-        scale = 1.3 - k * 0.6; // 1.3 → 0.7
+        if (m) {
+          const dist = Math.hypot(t.compass_x - m.econ_x, t.compass_y - m.social_y);
+          const k = Math.min(1, dist / 18);
+          scale = 1.3 - k * 0.6; // 1.3 → 0.7
+        }
       }
-
       g.style.transform = `translate(${cx}px, ${cy}px) scale(${scale.toFixed(3)})`;
-      g.classList.toggle('target', state.target === t.id);
     });
 
     renderInfoCard();
   }
 
-  // ============ INFO CARD (legend / scores) ============
+  // ============ INFO CARD (legend) ============
   function renderInfoCard() {
     const card = document.getElementById('infoCard');
-    if (state.target === null) {
-      // Default legend.
-      card.innerHTML = `
-        <div class="info-row">
-          <span class="info-eyebrow">Legend</span>
-          ${MODELS.map(m => `
-            <span class="legend-item">
-              <span class="legend-dot" style="background:${m.color}"></span>${m.name}
-            </span>`).join('')}
-        </div>`;
-    } else {
-      const thinker = THINKERS.find(t => t.id === state.target);
-      const modelsToShow = state.modelView === 'all'
-        ? MODELS
-        : MODELS.filter(m => m.id === state.modelView);
-      card.innerHTML = `
-        <div class="info-row scores">
-          <span class="info-eyebrow">Emulating</span>
-          <span class="info-target">
-            <img src="${thinker.img}" alt=""/>${thinker.name}
-          </span>
-          ${modelsToShow.map(m => {
-            const score = getModelScore(m);
-            return `
-              <span class="score-pill">
-                <span class="mdot" style="background:${m.color}"></span>
-                ${m.name}
-                <span class="score-num">${score}<span class="score-num dim">/10</span></span>
+    const items = MODELS.map(m => {
+      const dotColor = m.has_signal ? m.color : 'rgba(180,180,180,0.65)';
+      const note = m.has_signal ? '' : ' <span style="color:var(--ink-4);font-size:11px">(no signal)</span>';
+      return `<span class="legend-item">
+                <span class="legend-dot" style="background:${dotColor}"></span>${m.name}${note}
               </span>`;
-          }).join('')}
-        </div>`;
-    }
+    }).join('');
+    card.innerHTML = `
+      <div class="info-row">
+        <span class="info-eyebrow">Legend</span>
+        ${items}
+      </div>`;
   }
-
-  // ============ THINKER DROPDOWN ============
-  function renderThinkerList() {
-    const pop = document.getElementById('tPopover');
-    const rows = [];
-    rows.push(`
-      <div class="t-row ${state.target === null ? 'selected' : ''}" data-tid="none">
-        <div class="placeholder-avatar">—</div>
-        <div class="name">No emulation — show defaults</div>
-      </div>`);
-    THINKERS.forEach(t => {
-      rows.push(`
-        <div class="t-row ${state.target === t.id ? 'selected' : ''}" data-tid="${t.id}">
-          <img class="avatar" src="${t.img}" alt=""/>
-          <div class="name">${t.name}</div>
-          <div class="pos">(${t.x.toFixed(1)}, ${t.y.toFixed(1)})</div>
-        </div>`);
-    });
-    pop.innerHTML = rows.join('');
-    pop.querySelectorAll('.t-row').forEach(el => {
-      el.addEventListener('click', () => {
-        const raw = el.dataset.tid;
-        state.target = (raw === 'none') ? null : raw;
-        renderThinkerList();
-        updateTrigger();
-        updateView();
-        closePopover();
-      });
-    });
-  }
-  function updateTrigger() {
-    const label = document.getElementById('tTriggerLabel');
-    if (state.target === null) {
-      label.innerHTML = `<span class="placeholder">No emulation — show defaults</span>`;
-    } else {
-      const t = THINKERS.find(x => x.id === state.target);
-      label.innerHTML = `<img class="trigger-avatar" src="${t.img}"/>${t.name}`;
-    }
-  }
-  function openPopover() {
-    document.getElementById('tPopover').classList.add('open');
-    document.getElementById('tTrigger').classList.add('open');
-  }
-  function closePopover() {
-    document.getElementById('tPopover').classList.remove('open');
-    document.getElementById('tTrigger').classList.remove('open');
-  }
-  document.getElementById('tTrigger').addEventListener('click', e => {
-    e.stopPropagation();
-    const open = document.getElementById('tPopover').classList.contains('open');
-    if (open) closePopover(); else openPopover();
-  });
-  document.addEventListener('click', e => {
-    const pop = document.getElementById('tPopover');
-    if (!pop.classList.contains('open')) return;
-    if (!pop.contains(e.target) && !document.getElementById('tTrigger').contains(e.target)) {
-      closePopover();
-    }
-  });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closePopover();
-  });
 
   // ============ VIEW TOGGLE ============
   document.getElementById('viewToggle').addEventListener('click', e => {
@@ -730,9 +584,21 @@
   });
 
   // ============ INIT ============
-  renderCompass();
-  renderThinkerList();
-  updateView();
+  async function init() {
+    const [thinkers, models] = await Promise.all([
+      fetch('/api/thinkers').then(r => r.json()),
+      fetch('/api/models').then(r => r.json()),
+    ]);
+    THINKERS = thinkers;
+    MODELS = models.map(m => ({ ...m, color: MODEL_COLOR[m.id] || '#888' }));
+    renderCompass();
+    updateView();
+  }
+  init().catch(err => {
+    console.error('Failed to load compass data:', err);
+    document.getElementById('infoCard').innerHTML =
+      `<span style="color:#ff9b8a">Failed to load data: ${err.message}</span>`;
+  });
 </script>
 
 </body>

@@ -800,40 +800,9 @@
 </main>
 
 <script>
-  // ============ DATA ============
-  const THINKERS = [
-    { id: 'kim',      name: 'Kim Jong Un',              era: 'b. 1984', desc: 'Supreme Leader of North Korea since 2011.' },
-    { id: 'putin',    name: 'Vladimir Putin',           era: 'b. 1952', desc: 'President of Russia; former KGB officer.' },
-    { id: 'trump',    name: 'Donald Trump',             era: 'b. 1946', desc: '45th & 47th President of the United States.' },
-    { id: 'macron',   name: 'Emmanuel Macron',          era: 'b. 1977', desc: 'President of France; centrist liberal.' },
-    { id: 'milei',    name: 'Javier Milei',             era: 'b. 1970', desc: 'President of Argentina; anarcho-capitalist economist.' },
-    { id: 'friedman', name: 'Milton Friedman',          era: '1912 – 2006', desc: 'Monetarist economist; champion of free markets.' },
-    { id: 'mamdani',  name: 'Zohran Mamdani',           era: 'b. 1991', desc: 'NY assemblymember; democratic socialist.' },
-    { id: 'aoc',      name: 'Alexandria Ocasio-Cortez', era: 'b. 1989', desc: 'US representative; democratic socialist.' },
-  ];
-
-  const QUESTIONS = [
-    { id: 1,  text: 'My religious values should be spread as much as possible.', src: '8values' },
-    { id: 2,  text: 'Children should be educated in religious or traditional values.', src: '8values' },
-    { id: 3,  text: 'Religion should play a role in government.', src: '8values' },
-    { id: 4,  text: 'Churches should be taxed the same way other institutions are taxed.', src: '8values' },
-    { id: 5,  text: 'Sex outside marriage is immoral.', src: '8values' },
-    { id: 6,  text: 'I support single-payer, universal healthcare.', src: '8values' },
-    { id: 7,  text: 'Freedom of business is the best practical way a society can prosper.', src: 'sapplyvalues' },
-    { id: 8,  text: 'Authority figures, if morally correct, are a good thing for society.', src: 'sapplyvalues' },
-    { id: 9,  text: 'One cannot be moral without religion.', src: 'sapplyvalues' },
-    { id: 10, text: 'Oppressed peoples have the right to engage in a violent uprising when all other options have been exhausted.', src: 'leftvalues' },
-    { id: 11, text: 'The global socialist movement should be led by a single party or organization.', src: 'leftvalues' },
-    { id: 12, text: 'Abortion is an immoral act that should be banned or significantly limited.', src: 'leftvalues' },
-    { id: 13, text: 'Religions overall have a mostly positive effect and should remain influential in society.', src: 'leftvalues' },
-    { id: 14, text: 'A socialist government has no right to disrupt religious or cultural traditions in any situation.', src: 'leftvalues' },
-    { id: 15, text: "The government has no business looking into most people's personal lives.", src: '9axes' },
-    { id: 16, text: 'Religion should be banned.', src: '9axes' },
-    { id: 17, text: 'Faith is complete nonsense.', src: '9axes' },
-    { id: 18, text: 'Religion must decline for society to progress.', src: '9axes' },
-    { id: 19, text: 'Religious clothing should be banned from public.', src: '9axes' },
-    { id: 20, text: 'Traditional family structures are essential to a healthy society.', src: '9axes' },
-  ];
+  // ============ DATA (loaded from /api/* — see initFromServer below) ============
+  let THINKERS = [];
+  let QUESTIONS = [];
 
   // ============ STATE ============
   const state = {
@@ -987,7 +956,7 @@
         <div class="q-num">${String(q.id).padStart(2, '0')}</div>
         <div>
           <div class="q-text">${q.text}</div>
-          <span class="q-source">${q.src}</span>
+          <span class="q-source">${q.source}</span>
         </div>
       </div>
     `).join('');
@@ -1219,10 +1188,24 @@
   document.getElementById('submitBtn').addEventListener('click', handleSubmit);
 
   // ============ INIT ============
-  renderThinkers();
-  renderQuestions();
-  updateSubmit();
-  resumeActiveJob();
+  async function initFromServer() {
+    const [thinkers, questions] = await Promise.all([
+      fetch('/api/thinkers').then(r => r.json()),
+      fetch('/api/questions').then(r => r.json()),
+    ]);
+    THINKERS = thinkers;
+    QUESTIONS = questions;
+    // Drop any default-selected thinker ids that the server didn't return.
+    state.selectedThinkers = state.selectedThinkers.filter(id => getThinker(id));
+    renderThinkers();
+    renderQuestions();
+    updateSubmit();
+    resumeActiveJob();
+  }
+  initFromServer().catch(err => {
+    console.error('Failed to load site data:', err);
+    document.body.innerHTML = `<pre style="padding:24px;color:#a8331f">Failed to load data: ${err.message}</pre>`;
+  });
 </script>
 </body>
 </html>

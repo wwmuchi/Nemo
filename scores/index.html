@@ -239,8 +239,8 @@
 
 <div class="page">
   <div class="page-head">
-    <div class="page-title">Emulation scores</div>
-    <div class="page-sub">8 figures · 4 models · /10</div>
+    <div class="page-title">Model alignment scores</div>
+    <div class="page-sub">8 figures · 4 models · mean /10</div>
   </div>
 
   <div class="col-headers">
@@ -256,64 +256,62 @@
 </div>
 
 <script>
-  const THINKERS = [
-    { id: 'kim',      name: 'Kim Jong Un',              x: -9.5, y:  9.5, img: '/images/kim.jpg' },
-    { id: 'putin',    name: 'Vladimir Putin',           x: -3.5, y:  9.0, img: '/images/putin.jpg' },
-    { id: 'trump',    name: 'Donald Trump',             x:  9.0, y:  9.0, img: '/images/trump.jpg' },
-    { id: 'macron',   name: 'Emmanuel Macron',          x:  7.0, y:  4.5, img: '/images/macron.jpg' },
-    { id: 'milei',    name: 'Javier Milei',             x: 10.0, y: -3.0, img: '/images/milei.jpg' },
-    { id: 'friedman', name: 'Milton Friedman',          x:  3.0, y: -8.0, img: '/images/friedman.jpg' },
-    { id: 'mamdani',  name: 'Zohran Mamdani',           x: -3.5, y: -3.5, img: '/images/mamdani.jpg' },
-    { id: 'aoc',      name: 'Alexandria Ocasio-Cortez', x: -4.0, y: -3.5, img: '/images/aoc.jpg' },
-  ];
+  // CSS-variable colors keyed by model id. Presentation only — not data.
+  const MODEL_COLOR = {
+    claude:  'var(--c-claude)',
+    chatgpt: 'var(--c-chatgpt)',
+    gemini:  'var(--c-gemini)',
+    grok:    'var(--c-grok)',
+  };
+  const NO_SIGNAL_COLOR = 'rgba(180, 180, 180, 0.55)';
 
-  const MODELS = [
-    { id: 'claude',  name: 'Claude',  color: 'var(--c-claude)' },
-    { id: 'chatgpt', name: 'ChatGPT', color: 'var(--c-chatgpt)' },
-    { id: 'gemini',  name: 'Gemini',  color: 'var(--c-gemini)' },
-    { id: 'grok',    name: 'Grok',    color: 'var(--c-grok)' },
-  ];
-
-  // Same FNV-1a hash & emulationSkill as the compass page so scores match across views.
-  function hash(str) {
-    let h = 2166136261;
-    for (let i = 0; i < str.length; i++) {
-      h ^= str.charCodeAt(i);
-      h = Math.imul(h, 16777619);
-    }
-    return Math.abs(h);
-  }
-  function emulationSkill(modelId, thinkerId) {
-    return (hash(modelId + ':' + thinkerId) % 10) + 1;
-  }
-
-  function render() {
+  function render(thinkers, models) {
     const grid = document.getElementById('grid');
-    grid.innerHTML = THINKERS.map((t, i) => {
-      const scores = MODELS.map(m => ({ m, score: emulationSkill(m.id, t.id) }));
-      const best = Math.max(...scores.map(s => s.score));
-      const bars = scores.map(({ m, score }) => `
-        <div class="bar ${score === best ? 'best' : ''}">
-          <div class="bar-label">${m.name}</div>
-          <div class="bar-track">
-            <div class="bar-fill" data-target="${score * 10}" style="background:${m.color}; right:100%"></div>
-          </div>
-          <div class="bar-score">${score}<span class="denom">/10</span></div>
-        </div>`).join('');
+    grid.innerHTML = thinkers.map((t, i) => {
+      // (model, score-or-null) pairs in the listed model order.
+      const scored = models.map(m => ({
+        m,
+        score: m.has_signal ? m.scores[t.id] : null,
+      }));
+      const realScores = scored.filter(s => s.score != null).map(s => s.score);
+      const best = realScores.length ? Math.max(...realScores) : null;
+
+      const bars = scored.map(({ m, score }) => {
+        if (score == null) {
+          return `
+            <div class="bar" title="${m.name} answered neutrally on every probe question.">
+              <div class="bar-label" style="color:var(--ink-4)">${m.name}</div>
+              <div class="bar-track">
+                <div class="bar-fill" data-target="50" style="background:${NO_SIGNAL_COLOR}; right:100%"></div>
+              </div>
+              <div class="bar-score" style="color:var(--ink-4)">— <span class="denom">no signal</span></div>
+            </div>`;
+        }
+        const isBest = (score === best);
+        const pct = score * 10; // 1–10 → 10–100
+        return `
+          <div class="bar ${isBest ? 'best' : ''}">
+            <div class="bar-label">${m.name}</div>
+            <div class="bar-track">
+              <div class="bar-fill" data-target="${pct}" style="background:${MODEL_COLOR[m.id] || '#888'}; right:100%"></div>
+            </div>
+            <div class="bar-score">${score.toFixed(2)}<span class="denom">/10</span></div>
+          </div>`;
+      }).join('');
+
       return `
         <div class="row" style="animation-delay:${i * 0.06}s">
           <div class="row-left">
-            <img class="row-avatar" src="${t.img}" alt=""/>
+            <img class="row-avatar" src="${t.image}" alt=""/>
             <div>
               <div class="row-name">${t.name}</div>
-              <div class="row-pos">(${t.x.toFixed(1)}, ${t.y.toFixed(1)})</div>
+              <div class="row-pos">(${t.compass_x.toFixed(1)}, ${t.compass_y.toFixed(1)})</div>
             </div>
           </div>
           <div class="row-right">${bars}</div>
         </div>`;
     }).join('');
 
-    // Animate bar fills after layout settles.
     requestAnimationFrame(() => {
       document.querySelectorAll('.bar-fill').forEach(el => {
         const pct = Number(el.dataset.target);
@@ -322,7 +320,18 @@
     });
   }
 
-  render();
+  async function init() {
+    const [thinkers, models] = await Promise.all([
+      fetch('/api/thinkers').then(r => r.json()),
+      fetch('/api/models').then(r => r.json()),
+    ]);
+    render(thinkers, models);
+  }
+  init().catch(err => {
+    console.error('Failed to load scores data:', err);
+    document.getElementById('grid').innerHTML =
+      `<div style="color:#ff9b8a;padding:18px">Failed to load data: ${err.message}</div>`;
+  });
 </script>
 </body>
 </html>
