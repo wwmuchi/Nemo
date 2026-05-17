@@ -2,7 +2,7 @@
 Render a political-compass plot showing:
   - The 8 ideologues at their known coordinates (red dots).
   - A translucent scatter cloud of per-question coordinates for each model,
-    placed via score-weighted centroid (no trilateration, no calibration).
+    placed via score-weighted centroid.
   - A 1-sigma confidence ellipse per model fit from the cloud's covariance.
 
 No central marker per model -- the cloud and its ellipse ARE the placement.

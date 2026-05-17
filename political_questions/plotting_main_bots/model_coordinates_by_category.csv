@@ -1,46 +1,61 @@
 model,category,econ_x,social_y,n_questions
-chatgpt,Economy & Markets,0.5908,3.4685,1
-chatgpt,Environment & Climate,0.6465,2.9252,1
-chatgpt,"Family, Gender & Sexuality",0.0484,0.7913,2
-chatgpt,Foreign Policy & International Relations,-0.6329,4.7198,1
-chatgpt,Immigration & National Identity,-1.1128,2.4419,2
-chatgpt,"Justice, Crime & Law Enforcement",-4.1499,1.6618,1
-chatgpt,Religion & Morality,1.1304,2.6414,2
-chatgpt,Taxation & Welfare,-2.6685,2.1745,1
-chatgpt,"Technology, Media & Privacy",0.266,1.6956,2
-claude,Civil Liberties & Individual Rights,1.5595,-0.0687,1
-claude,Economy & Markets,-2.4615,2.5891,1
-claude,Environment & Climate,1.9747,1.4328,2
-claude,"Family, Gender & Sexuality",1.7445,0.3005,5
-claude,Foreign Policy & International Relations,3.6402,0.193,2
-claude,Healthcare,2.4157,1.0755,1
-claude,"Justice, Crime & Law Enforcement",-4.1739,2.5571,1
-claude,Labor & Workers,-0.6449,3.0861,1
-claude,Religion & Morality,0.2984,2.057,3
-claude,Taxation & Welfare,-0.3576,3.4044,2
-claude,"Technology, Media & Privacy",0.7417,2.2523,3
-gemini,Civil Liberties & Individual Rights,0.3837,2.1075,1
-gemini,Economy & Markets,0.6538,2.1736,4
-gemini,Environment & Climate,0.4501,2.919,1
-gemini,"Family, Gender & Sexuality",-0.147,0.6815,3
-gemini,Foreign Policy & International Relations,0.3882,2.1304,1
-gemini,Immigration & National Identity,0.1089,3.0303,2
-gemini,"Justice, Crime & Law Enforcement",0.3288,1.934,2
-gemini,Religion & Morality,-0.2783,1.9148,1
-gemini,Taxation & Welfare,1.6906,1.9972,2
-gemini,"Technology, Media & Privacy",0.5386,2.5251,2
-grok,Civil Liberties & Individual Rights,1.5079,1.7439,2
-grok,Democracy & Political System,0.9876,1.3322,1
-grok,Economy & Markets,3.2104,1.2309,3
-grok,Environment & Climate,0.7652,2.3134,2
-grok,"Family, Gender & Sexuality",1.6229,3.3253,4
-grok,Foreign Policy & International Relations,1.9027,0.8407,2
-grok,"Government, Authority & State Power",1.5822,2.8824,2
-grok,Healthcare,2.0744,1.6961,2
-grok,Immigration & National Identity,2.0052,4.9753,3
-grok,"Justice, Crime & Law Enforcement",1.7621,2.9128,3
-grok,Labor & Workers,1.0218,2.072,1
-grok,Religion & Morality,0.0053,2.0321,2
-grok,Society & Culture,1.8254,1.4431,2
-grok,Taxation & Welfare,5.2272,-1.0594,2
-grok,"Technology, Media & Privacy",0.9977,1.8944,3
+chatgpt,Civil Liberties & Individual Rights,1.0625,1.75,2
+chatgpt,Democracy & Political System,1.0625,1.75,1
+chatgpt,Economy & Markets,1.0455,1.8355,6
+chatgpt,Environment & Climate,1.0459,1.8333,3
+chatgpt,"Family, Gender & Sexuality",0.8672,1.3797,5
+chatgpt,Foreign Policy & International Relations,0.7426,2.1765,3
+chatgpt,"Government, Authority & State Power",1.0625,1.75,2
+chatgpt,Healthcare,1.0625,1.75,3
+chatgpt,Immigration & National Identity,0.5974,1.6716,4
+chatgpt,"Justice, Crime & Law Enforcement",0.6946,1.6653,6
+chatgpt,Labor & Workers,1.0625,1.75,1
+chatgpt,Religion & Morality,1.22,1.7542,5
+chatgpt,Society & Culture,1.0625,1.75,2
+chatgpt,Taxation & Welfare,0.4696,1.7342,3
+chatgpt,"Technology, Media & Privacy",0.9837,1.4796,4
+claude,Civil Liberties & Individual Rights,1.3419,0.9508,2
+claude,Democracy & Political System,1.0625,1.75,1
+claude,Economy & Markets,0.797,1.7614,6
+claude,Environment & Climate,1.6334,1.3311,3
+claude,"Family, Gender & Sexuality",1.8301,0.3741,5
+claude,Foreign Policy & International Relations,2.2205,1.0695,3
+claude,"Government, Authority & State Power",1.0625,1.75,2
+claude,Healthcare,1.4537,1.463,3
+claude,Immigration & National Identity,1.0625,1.75,4
+claude,"Justice, Crime & Law Enforcement",0.6937,1.7861,6
+claude,Labor & Workers,0.3378,2.1351,1
+claude,Religion & Morality,0.9601,1.5838,5
+claude,Society & Culture,1.0625,1.75,2
+claude,Taxation & Welfare,0.734,1.996,3
+claude,"Technology, Media & Privacy",1.2124,1.5623,4
+gemini,Civil Liberties & Individual Rights,0.9607,1.6571,2
+gemini,Democracy & Political System,1.0625,1.75,1
+gemini,Economy & Markets,1.0865,1.6278,6
+gemini,Environment & Climate,1.0241,1.8377,3
+gemini,"Family, Gender & Sexuality",0.7128,1.1464,5
+gemini,Foreign Policy & International Relations,1.0042,1.7083,3
+gemini,"Government, Authority & State Power",1.0625,1.75,2
+gemini,Healthcare,1.0625,1.75,3
+gemini,Immigration & National Identity,0.9401,1.9212,4
+gemini,"Justice, Crime & Law Enforcement",0.9674,1.6495,6
+gemini,Labor & Workers,1.0625,1.75,1
+gemini,Religion & Morality,0.9427,1.6854,5
+gemini,Society & Culture,1.0625,1.75,2
+gemini,Taxation & Welfare,1.5782,1.5219,3
+gemini,"Technology, Media & Privacy",1.0484,1.7537,4
+grok,Civil Liberties & Individual Rights,1.4119,1.4928,2
+grok,Democracy & Political System,1.1548,1.2857,1
+grok,Economy & Markets,1.7792,1.6796,6
+grok,Environment & Climate,1.1351,1.6196,3
+grok,"Family, Gender & Sexuality",1.6949,2.2446,5
+grok,Foreign Policy & International Relations,1.4372,1.2851,3
+grok,"Government, Authority & State Power",1.5967,2.0821,2
+grok,Healthcare,1.5729,1.6689,3
+grok,Immigration & National Identity,1.8843,2.7705,4
+grok,"Justice, Crime & Law Enforcement",1.4241,1.9671,6
+grok,Labor & Workers,1.2375,1.6375,1
+grok,Religion & Morality,0.8936,1.6519,5
+grok,Society & Culture,1.6188,1.448,2
+grok,Taxation & Welfare,2.7571,1.1777,3
+grok,"Technology, Media & Privacy",1.1954,1.539,4
