@@ -1,0 +1,35 @@
+model,category,econ_x,social_y,n_questions
+chatgpt,Economy & Markets,0.7775,2.978,1
+chatgpt,Environment & Climate,0.8742,2.5961,1
+chatgpt,"Family, Gender & Sexuality",1.4497,0.0654,2
+chatgpt,Foreign Policy & International Relations,-0.3226,3.9643,1
+chatgpt,Immigration & National Identity,-0.184,2.6228,2
+chatgpt,"Justice, Crime & Law Enforcement",-2.4457,1.954,1
+chatgpt,Religion & Morality,1.4657,2.5166,2
+chatgpt,Taxation & Welfare,-1.743,1.7061,1
+chatgpt,"Technology, Media & Privacy",0.6987,1.649,2
+claude,Civil Liberties & Individual Rights,1.651,0.2313,1
+claude,Economy & Markets,-1.2753,2.5727,1
+claude,Environment & Climate,1.9787,1.4227,2
+claude,"Family, Gender & Sexuality",1.874,0.5521,5
+claude,Foreign Policy & International Relations,3.3515,0.6394,2
+claude,Healthcare,2.3161,1.1455,1
+claude,"Justice, Crime & Law Enforcement",-2.428,2.7618,1
+claude,Labor & Workers,-0.0549,2.841,1
+claude,Religion & Morality,0.6828,1.9427,3
+claude,Taxation & Welfare,0.2729,3.1836,2
+claude,"Technology, Media & Privacy",1.0542,2.0662,3
+grok,Civil Liberties & Individual Rights,1.6722,2.139,2
+grok,Economy & Markets,2.9647,2.7303,4
+grok,Environment & Climate,2.0964,1.292,1
+grok,"Family, Gender & Sexuality",2.5072,2.1954,5
+grok,Foreign Policy & International Relations,3.6753,1.1244,3
+grok,"Government, Authority & State Power",2.3161,1.1455,1
+grok,Healthcare,4.5793,1.4343,1
+grok,Immigration & National Identity,2.9449,2.2795,4
+grok,"Justice, Crime & Law Enforcement",1.494,4.207,2
+grok,Labor & Workers,2.2123,4.0243,1
+grok,Religion & Morality,2.0604,1.1291,2
+grok,Society & Culture,2.5833,1.4012,1
+grok,Taxation & Welfare,4.2706,-0.2283,2
+grok,"Technology, Media & Privacy",0.7608,3.0227,2
