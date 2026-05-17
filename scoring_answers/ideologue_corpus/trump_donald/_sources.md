@@ -2,60 +2,41 @@
 
 **Tier:** T1 (abundant English-native material)
 **Language:** en
-**Era to anchor:** Second term, 2025–present. Include first-term (2017–2021)
-and campaign material; flag pre-2015 business-era statements as a separate
-phase in `notes` since views shifted.
+**Era to anchor:** Second term, 2025–present. First-term and 2024 campaign
+material is fair game when it captures a clearer statement of the same view.
 
-## Must-haves (collect these first)
+## Key sources (a small focused set, not a survey)
 
-### Speeches
-- [ ] 2025-01-20 Second inaugural address
-- [ ] 2024-07-18 RNC acceptance speech (Milwaukee)
-- [ ] 2017-01-20 First inaugural ("American Carnage")
-- [ ] 2016-07-21 RNC acceptance speech (Cleveland)
-- [ ] 2015-06-16 Campaign launch speech (Trump Tower escalator)
-- [ ] 2018 UN General Assembly address
-- [ ] 2017-08-15 Charlottesville press conference response
-- [ ] State of the Union addresses (2018, 2019, 2020, 2025)
+Aim for ~5–8 documents total that together give a clear picture of his
+worldview. Suggested anchors:
 
-### Interviews / debates
-- [ ] 2024 presidential debates (vs Biden June, vs Harris Sept)
-- [ ] 2024 Joe Rogan Experience interview
-- [ ] 2024 Lex Fridman interview
-- [ ] 2024 Theo Von interview
-- [ ] 60 Minutes interviews (various years)
+- 2025-01-20 Second inaugural address — current statement of priorities
+- 2024-07-18 RNC acceptance speech — campaign-era synthesis
+- One long-form 2024 interview (Joe Rogan or Lex Fridman) — extended
+  ideological exposition outside a rally format
+- One bundled Truth Social file on tariffs (2024–2025) — his signature
+  economic instinct in his own words
+- One bundled Truth Social file on immigration (2024–2025) — his signature
+  domestic issue
 
-### Social posts (bundle by topic)
-- [ ] Truth Social on tariffs (2024-2025)
-- [ ] Truth Social on Ukraine / Russia (2022-2025)
-- [ ] Truth Social on immigration (2024-2025)
-- [ ] Twitter archive on China (pre-2021)
-- [ ] Twitter archive on media / "fake news" (pre-2021)
-
-### Long-form
-- [ ] The Art of the Deal (1987) — selected chapters on negotiation philosophy
-  (flag in notes: ghostwritten by Tony Schwartz)
+Stop once the picture is clear. Don't pad with more rallies that repeat the
+same themes.
 
 ## Primary sources
 
 | Source | URL | Notes |
 |---|---|---|
-| Miller Center | millercenter.org/the-presidency/presidential-speeches | Curated transcripts of major speeches, first term |
 | White House archive | whitehouse.gov/briefing-room/ | Official 2025+ transcripts |
-| Trump Twitter Archive | thetrumparchive.com | Clean JSON of all tweets through Jan 2021 |
-| Roll Call / Rev.com | rev.com | Paid transcripts of debates, rallies, interviews |
-| Factbase (archived) | factba.se | Was the most complete archive; check archive.org if down |
-| C-SPAN | c-span.org | Press conferences, official events, often with transcripts |
-
-## Sources to explore
-
-- Truth Social scraping options (no official archive equivalent to Twitter)
-- Rally transcripts — Rev.com has many, otherwise YouTube auto-captions are
-  the fallback (mark `notes: yt-dlp auto-caption, unverified`)
+| Miller Center | millercenter.org/the-presidency/presidential-speeches | First-term major speeches |
+| Trump Twitter Archive | thetrumparchive.com | Clean JSON of tweets through Jan 2021 |
+| Rev.com | rev.com | Paid transcripts of debates and interviews |
 
 ## Collected
 
-(Log what you've added here, oldest first. Format:
-`- <filename> — <one-line note>`)
+(Log what you've added here. Format: `- <filename> — <one-line note>`)
 
-_None yet._
+- 2017-01-20_first-inaugural.md — "American Carnage"; Miller Center transcript (first-term baseline)
+- 2017-08-15_charlottesville-press-conference.md — Trump Tower presser; "very fine people on both sides" / "blame on both sides"; ABC News reprint of WH transcript
+- 2024-09-10_debate-vs-harris.md — ABC debate vs Harris (Philadelphia); selected verbatim Trump turns on economy/tariffs/abortion/IVF/Springfield/rallies (first hour). Full transcript at source_url.
+- 2018-2021_twitter-on-china.md — bundle of 471 @realDonaldTrump tweets mentioning china/chinese/Xi/Wuhan (2018-01 through Jan 2021 ban); source MarkHershey/CompleteTrumpTweetsArchive CSV.
+- 2025-01-20_second-inaugural.md — "golden age" / Liberation Day; official whitehouse.gov transcript.

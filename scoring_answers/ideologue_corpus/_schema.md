@@ -94,12 +94,16 @@ and date each one.
 
 ## Collection workflow
 
-1. Start with the must-haves listed in each figure's `_sources.md`.
+The goal is a *focused* picture of each figure's views, not an archive.
+Each figure's `_sources.md` lists a small set of key documents — collect
+those and stop. If a figure is fully captured in 4–6 documents, that's
+the right answer; don't pad.
+
+1. Work through the "Key sources" list in each figure's `_sources.md`.
 2. Save each document with full frontmatter — no shortcuts on metadata,
    it matters for retrieval filtering later.
 3. Log what you added in that figure's `_sources.md` under "Collected".
-4. When you find a new useful source, add it under "Sources to explore"
-   first so the next person knows where you were looking.
+4. Only add another document if it covers a view the existing ones don't.
 
 ## Tier system (from _sources.md files)
 

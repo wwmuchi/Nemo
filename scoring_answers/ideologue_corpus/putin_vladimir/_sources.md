@@ -1,62 +1,50 @@
 # Vladimir Putin — sources
 
-**Tier:** T2 (Russian-native, but Kremlin publishes official English translations)
+**Tier:** T2 (Russian-native, Kremlin publishes official English translations)
 **Language:** ru → en (use Kremlin official translations; flag if using DeepL)
-**Era to anchor:** Full presidency 2000–present, but especially the
-2007-onward more-confrontational phase. Note that pre-2007 (Munich speech)
-he was rhetorically more accommodative to the West — relevant for scoring
-statements on US/NATO relations.
+**Era to anchor:** Post-2007 confrontational phase. Pre-2007 (Munich speech)
+was rhetorically more accommodative to the West — relevant only when scoring
+statements about US/NATO relations.
 
-## Must-haves
+## Key sources (a small focused set, not a survey)
 
-### Foundational speeches
-- [ ] 2007-02-10 Munich Security Conference speech ("multipolar world")
-- [ ] 2014-03-18 Crimea annexation address to Federal Assembly
-- [ ] 2022-02-21 Address recognizing DPR/LPR
-- [ ] 2022-02-24 Address announcing "special military operation"
-- [ ] 2022-09-21 Partial mobilization address
-- [ ] 2022-09-30 Speech on annexation of four Ukrainian regions
-- [ ] 2023-02-21 Federal Assembly address
-- [ ] 2024-02-29 Federal Assembly address
+Aim for ~5–7 documents that capture his stated worldview. Suggested anchors:
 
-### Interviews
-- [ ] 2024-02-06 Tucker Carlson interview (load-bearing — long-form ideological exposition)
-- [ ] 2018-03-07 NBC Megyn Kelly interview
-- [ ] Oliver Stone "The Putin Interviews" (2017) — transcripts
+- 2007-02-10 Munich Security Conference speech — the pivot point on
+  US/NATO relations
+- 2022-02-24 Address announcing "special military operation" —
+  load-bearing for Ukraine framing
+- 2021-07-12 "On the Historical Unity of Russians and Ukrainians" essay —
+  the fullest written exposition of his historical/ideological framework
+- 2024-02-06 Tucker Carlson interview — long-form ideological exposition
+  for a Western audience
+- One Valdai Discussion Club speech — multi-polar-world rhetoric in
+  programmatic form
 
-### Long-form essays
-- [ ] 2021-07-12 "On the Historical Unity of Russians and Ukrainians"
-      (essay published on en.kremlin.ru — load-bearing for Ukraine views)
-- [ ] 2020-06-18 Article on WWII / "75th Anniversary of the Great Victory"
-
-### Press conferences
-- [ ] Annual "Direct Line" press conferences (pick 3–4 across the years)
-- [ ] Valdai Discussion Club annual speeches (pick 3–4)
+Stop once the picture is clear. State-of-the-nation addresses repeat
+themes; one or two recent ones is enough.
 
 ## Primary sources
 
 | Source | URL | Notes |
 |---|---|---|
-| Kremlin (English) | en.kremlin.ru | THE source. Official translations of speeches, interviews, articles |
+| Kremlin (English) | en.kremlin.ru | THE source — official translations of speeches, interviews, articles |
 | Valdai Club | valdaiclub.com | Hosts his Valdai speeches |
-| TASS (English) | tass.com | State news agency, has speech excerpts |
+| TASS (English) | tass.com | State news agency, speech excerpts |
 
-## Sources to explore
-
-- Russian original side-by-side for nuance checks (en.kremlin.ru links to ru
-  version of each piece)
-- His earliest speeches (1999–2003) — less ideological, more technocratic;
-  useful for showing the era shift
-
-## Notes on this corpus
+## Notes
 
 - Translations are *official Kremlin output* — they're polished and
   sometimes soften domestic-audience rhetoric. Cross-reference major
   speeches with independent translations (Meduza, BBC Monitoring) when
   available.
-- Flag any speech delivered to a domestic-only audience (Russian state TV
-  addresses) vs international audiences — rhetoric shifts.
+- Flag any speech delivered to a domestic-only audience vs international
+  audiences — rhetoric shifts.
 
 ## Collected
 
-_None yet._
+- 2007-02-10_munich-security-conference.md — Munich Security Conference speech + Q&A; the pivot to confrontational US/NATO posture (Kremlin English transcript).
+- 2021-07-12_historical-unity-russians-ukrainians.md — Putin's signed article laying out the historical/ideological case that Russians and Ukrainians are "one people"; written 7 months before the 2022 invasion.
+- 2022-02-24_special-military-operation-address.md — Pre-dawn televised address announcing the "special military operation"; domestic audience; canonical statement of stated casus belli (NATO expansion, "denazification," Donbass).
+- 2024-02-06_tucker-carlson-interview.md — Long-form interview with Tucker Carlson; Western audience; extended ideological exposition including the 30-minute historical opening on Russia/Ukraine.
+- 2025-10-02_valdai-plenary.md — 22nd Valdai Discussion Club plenary in Sochi, theme "The Polycentric World: Instructions for Use"; programmatic multipolar-world rhetoric plus extended Q&A (most recent Valdai at retrieval date).
