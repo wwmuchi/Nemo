@@ -2,12 +2,8 @@
 -- Pivot SCORE_AUDIT into the 8 _BOT columns on RESPONSES_ENRICHED.
 -- ----------------------------------------------------------------------------
 -- Run after 05_score_anthropic.py (pilot OR full) finishes. Pure SQL, no
--- Cortex calls and no Anthropic spend. Works on whatever subset of rows are
--- currently in SCORE_AUDIT - rows without a SCORE_AUDIT entry keep NULL
--- _BOT values.
---
--- Lifted from the original 05b_run_scoring.sql Stage 2 verbatim - this is
--- the same pivot, just isolated so it can run on its own.
+-- API spend. Works on whatever subset of rows are currently in SCORE_AUDIT
+-- - rows without a SCORE_AUDIT entry keep NULL _BOT values.
 -- ============================================================================
 
 USE WAREHOUSE MODELDNA_WH;

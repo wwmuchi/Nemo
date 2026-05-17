@@ -1,8 +1,7 @@
 """Run a Snowflake SQL file via the Python connector.
 
-Handles multi-statement files (including the $$...$$ UDF body in
-05a_scoring_udf.sql) by using execute_string, which parses Snowflake SQL
-properly rather than naively splitting on ';'.
+Handles multi-statement files by using execute_string, which parses Snowflake
+SQL properly rather than naively splitting on ';'.
 
 Usage:
     python run_sql.py <path-to-sql-file>

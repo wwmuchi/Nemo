@@ -1,7 +1,7 @@
 -- ============================================================================
 -- Calibration / sanity checks
 -- ----------------------------------------------------------------------------
--- Run after 05b_run_scoring.sql. The cross-correlation query (6f) is the
+-- Run after 05_pivot.sql. The cross-correlation query (6f) is the
 -- single best end-to-end signal that the rubric and retrieval are working.
 -- ============================================================================
 

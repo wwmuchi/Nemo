@@ -1,9 +1,8 @@
 """Score every (response x ideologue) pair using the Anthropic API.
 
-Replaces 05a_scoring_udf.sql + 05b_run_scoring.sql from the original Cortex
-pipeline. Uses local sentence-transformers embeddings (computed by
-04_embed_corpus.py) for top-K retrieval on the 5 large-corpus figures, and
-includes the FULL corpus for the 3 small-corpus figures.
+Uses local sentence-transformers embeddings (computed by 04_embed_corpus.py)
+for top-K retrieval on the 5 large-corpus figures, and includes the FULL
+corpus for the 3 small-corpus figures.
 
 CLI:
     python 05_score_anthropic.py                   # score every unscored pair
@@ -67,8 +66,7 @@ Reply with ONLY a single JSON object on one line, no markdown, no prose before o
 
 
 def format_passages(chunks):
-    """Format a list of chunk dicts into the same '--- PASSAGE ---' block
-    layout used by the original Cortex UDF (05a_scoring_udf.sql:70-74)."""
+    """Format a list of chunk dicts into '--- PASSAGE ---' blocks."""
     parts = []
     for c in chunks:
         title = c.get("doc_title") or "(untitled)"
@@ -159,8 +157,7 @@ def score_one(client, model, figure_name, passages_text, response_text):
 
 
 def parse_score_response(raw):
-    """Try strict JSON first; fall back to regex extraction (same fallback
-    pattern as the original UDF at 05a_scoring_udf.sql:140-153)."""
+    """Try strict JSON first; fall back to regex extraction."""
     s = raw.strip()
     try:
         d = json.loads(s)

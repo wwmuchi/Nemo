@@ -92,11 +92,3 @@ accounts. Switching to the Anthropic API avoids that gate and cuts cost.
 - **Concurrency**: `--workers` defaults to 8. The Anthropic SDK has
   built-in retry on rate-limit errors. If your account is on a low RPM
   tier, drop to `--workers 4` or 2.
-
-## Original Cortex pipeline
-
-The Cortex-based files (`04_create_cortex_search.sql`, `05a_scoring_udf.sql`,
-`05b_run_scoring.sql`, `05b_pilot.sql`) are still in this directory for
-reference. They require Snowflake Standard edition or higher and Cortex
-Complete + Cortex Search enabled in the region; if you ever upgrade the
-Snowflake account you could resume that path.
