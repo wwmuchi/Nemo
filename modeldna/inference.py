@@ -104,16 +104,64 @@ def _call_anthropic(model, prompt, max_tokens):
 
 
 def _call_gemini(model, prompt, max_tokens):
-    m = _clients["gemini"].GenerativeModel(model)
-    r = m.generate_content(
-        prompt,
-        generation_config={"temperature": 0, "max_output_tokens": max_tokens})
-    # A safety block leaves .text empty; treat that as an (empty) response,
-    # which the judge will read as a refusal - which is correct.
+    """Direct HTTPS to Gemini's v1beta endpoint.
+
+    The deprecated `google-generativeai` SDK has been observed to hang
+    indefinitely on `generate_content()` calls (0% CPU, alive TCP connection,
+    no progress) — possibly a connection-pool or retry bug. Direct HTTP
+    bypasses it and consistently returns in 1-5s. Also disables thinking on
+    2.5+ models so max_tokens really means visible output.
+    """
+    import urllib.request as _urlreq
+    import json as _json
+    key = os.getenv("GEMINI_API_KEY")
+    url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
+           f"{model}:generateContent?key={key}")
+    body = _json.dumps({
+        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "temperature": 0,
+            "maxOutputTokens": max_tokens,
+            "thinkingConfig": {"thinkingBudget": 0},
+        },
+    }).encode()
+    req = _urlreq.Request(url, data=body, method="POST",
+                          headers={"Content-Type": "application/json"})
+    with _urlreq.urlopen(req, timeout=60) as resp:
+        data = _json.loads(resp.read())
     try:
-        return r.text or ""
-    except Exception:
+        parts = data["candidates"][0]["content"]["parts"]
+        return "".join(p.get("text", "") for p in parts)
+    except (KeyError, IndexError):
+        # Safety block or empty response → empty string (treated as refusal).
         return ""
+
+
+def _call_xai_direct(model, prompt, max_tokens):
+    """Direct HTTPS to xAI's OpenAI-compatible endpoint.
+
+    The OpenAI SDK has been observed to hang indefinitely on xAI calls when
+    the API is slow (no timeout enforcement on the socket-read path). Direct
+    HTTP via urllib enforces a real socket timeout.
+    """
+    import urllib.request as _urlreq
+    import json as _json
+    key = os.getenv("XAI_API_KEY")
+    body = _json.dumps({
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": max_tokens,
+        "temperature": 0,
+    }).encode()
+    req = _urlreq.Request(
+        "https://api.x.ai/v1/chat/completions",
+        data=body, method="POST",
+        headers={"Content-Type": "application/json",
+                 "Authorization": f"Bearer {key}"},
+    )
+    with _urlreq.urlopen(req, timeout=60) as resp:
+        data = _json.loads(resp.read())
+    return data["choices"][0]["message"].get("content") or ""
 
 
 def dispatch(provider, model, prompt):
@@ -121,7 +169,7 @@ def dispatch(provider, model, prompt):
     if provider == "openai":
         return _call_openai_like(_clients["openai"], model, prompt, cap)
     if provider == "xai":
-        return _call_openai_like(_clients["xai"], model, prompt, cap)
+        return _call_xai_direct(model, prompt, cap)
     if provider == "anthropic":
         return _call_anthropic(model, prompt, cap)
     if provider == "gemini":
