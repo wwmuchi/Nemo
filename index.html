@@ -12,22 +12,25 @@
 />
 <style>
   :root {
-    --bg:        #fafafa;
-    --surface:   #ffffff;
-    --surface-2: #f5f5f5;
-    --border:    #ececec;
-    --border-2:  #dddddd;
-    --ink:       #0a0a0a;
-    --ink-2:     #404040;
-    --ink-3:     #737373;
-    --ink-4:     #a3a3a3;
+    --bg:        transparent;
+    --surface:   rgba(255, 255, 255, 0.06);
+    --surface-2: rgba(255, 255, 255, 0.10);
+    --border:    rgba(255, 255, 255, 0.18);
+    --border-2:  rgba(255, 255, 255, 0.32);
+    --ink:       #ffffff;
+    --ink-2:     rgba(255, 255, 255, 0.88);
+    --ink-3:     rgba(255, 255, 255, 0.68);
+    --ink-4:     rgba(255, 255, 255, 0.48);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   html, body {
     height: 100%;
-    background: var(--bg);
+    background:
+      linear-gradient(rgba(5, 22, 45, 0.45), rgba(5, 22, 45, 0.78)),
+      url('/images/underwater_bg.jpg') center center / cover no-repeat fixed,
+      #051f3d;
     color: var(--ink);
     font-family: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 15px;
@@ -153,10 +156,12 @@
     position: absolute;
     top: 100%;
     left: 18px; right: 18px;
-    background: var(--surface);
-    border: 1px solid var(--border-2);
+    background: rgba(6, 22, 42, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.18);
     border-radius: 10px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.25);
     z-index: 50;
     display: none;
     flex-direction: column;
@@ -573,15 +578,16 @@
   }
   .model-opt:hover { color: var(--ink); background: var(--surface-2); }
   .model-opt.active {
-    background: var(--ink);
+    background: #062a4a;
     color: #fff;
     font-weight: 500;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.18) inset;
   }
-  .model-opt.active:hover { background: var(--ink); }
+  .model-opt.active:hover { background: #062a4a; }
   .submit {
-    background: var(--ink);
+    background: #062a4a;
     color: #fff;
-    border: 1px solid var(--ink);
+    border: 1px solid rgba(255,255,255,0.22);
     padding: 10px 24px;
     font-size: 13.5px;
     font-weight: 500;
@@ -591,15 +597,15 @@
     white-space: nowrap;
   }
   .submit:hover:not(:disabled) {
-    background: #1a1a1a;
+    background: #0a3a64;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
   }
   .submit:active:not(:disabled) { transform: translateY(0); box-shadow: none; }
   .submit:disabled {
-    background: #d4d4d4;
-    border-color: #d4d4d4;
-    color: #fff;
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.45);
     cursor: not-allowed;
   }
 
@@ -698,7 +704,7 @@
 <body>
 
 <nav class="homebar">
-  <div class="homebar-brand">nemo<span class="dot">·</span></div>
+  <div class="homebar-brand">Finding Nemo</div>
   <div class="homebar-nav">
     <a href="/" class="active">Probe</a>
     <a href="/compass/">Compass</a>
