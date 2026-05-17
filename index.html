@@ -113,151 +113,8 @@
   .panel-wrap::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.10); border-radius: 4px; }
   .panel-wrap::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.18); }
 
-  .add-thinker-wrap {
-    padding: 0 18px 8px;
-    position: relative;
-  }
-  .add-thinker {
-    width: 100%;
-    background: var(--surface);
-    border: 1px dashed var(--border-2);
-    color: var(--ink-2);
-    font-size: 13px;
-    font-weight: 450;
-    padding: 9px 12px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    transition: all 0.12s ease;
-  }
-  .add-thinker:hover {
-    border-color: var(--ink-3);
-    border-style: solid;
-    background: var(--surface-2);
-    color: var(--ink);
-  }
-  .add-thinker .lhs { display: flex; align-items: center; gap: 8px; }
-  .add-thinker .ico {
-    width: 14px; height: 14px;
-    display: inline-flex; align-items: center; justify-content: center;
-    color: var(--ink-3);
-  }
-  .add-thinker .count {
-    font-family: "Geist Mono", monospace;
-    font-size: 10.5px;
-    color: var(--ink-3);
-    letter-spacing: 0.04em;
-  }
-
-  /* Popover */
-  .popover {
-    position: absolute;
-    top: 100%;
-    left: 18px; right: 18px;
-    background: rgba(6, 22, 42, 0.97);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 10px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.25);
-    z-index: 50;
-    display: none;
-    flex-direction: column;
-    max-height: 420px;
-    overflow: hidden;
-    animation: popIn 0.14s ease;
-  }
-  .popover.open { display: flex; }
-  @keyframes popIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to { opacity: 1; transform: none; }
-  }
-  .pop-search {
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .pop-search svg { color: var(--ink-4); flex-shrink: 0; }
-  .pop-search input {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 13px;
-    color: var(--ink);
-  }
-  .pop-search input::placeholder { color: var(--ink-4); }
-  .pop-list {
-    overflow-y: auto;
-    flex: 1;
-    padding: 4px 0;
-  }
-  .pop-list::-webkit-scrollbar { width: 6px; }
-  .pop-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 3px; }
-
-  .pop-opt {
-    padding: 8px 14px;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    cursor: pointer;
-    transition: background 0.08s;
-  }
-  .pop-opt:hover { background: var(--surface-2); }
-  .pop-opt.disabled { opacity: 0.4; cursor: not-allowed; }
-  .pop-opt.disabled:hover { background: transparent; }
-  .pop-check {
-    width: 14px; height: 14px;
-    border: 1.25px solid var(--ink-4);
-    border-radius: 4px;
-    margin-top: 3px;
-    flex-shrink: 0;
-    position: relative;
-    transition: all 0.1s;
-    background: var(--surface);
-  }
-  .pop-opt.selected .pop-check {
-    background: var(--ink);
-    border-color: var(--ink);
-  }
-  .pop-opt.selected .pop-check::after {
-    content: "";
-    position: absolute;
-    left: 3px; top: 0.5px;
-    width: 4px; height: 7.5px;
-    border: solid #fff;
-    border-width: 0 1.5px 1.5px 0;
-    transform: rotate(45deg);
-  }
-  .pop-opt-meta { flex: 1; min-width: 0; }
-  .pop-opt-name {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--ink);
-    line-height: 1.3;
-  }
-  .pop-opt-era {
-    font-family: "Geist Mono", monospace;
-    font-size: 10px;
-    color: var(--ink-4);
-    margin-top: 2px;
-    letter-spacing: 0.02em;
-  }
-
   /* Thinker cards */
   .thinker-list { padding: 6px 6px 0; }
-  .empty-state {
-    padding: 40px 22px;
-    text-align: center;
-    font-size: 13px;
-    color: var(--ink-3);
-    line-height: 1.55;
-  }
-  .empty-state b { color: var(--ink-2); font-weight: 500; }
 
   .thinker-row {
     padding: 14px 16px;
@@ -291,18 +148,6 @@
     margin-top: 2px;
     letter-spacing: 0.02em;
   }
-  .thinker-remove {
-    background: none;
-    border: none;
-    color: var(--ink-4);
-    padding: 0 4px;
-    font-size: 13px;
-    line-height: 1;
-    opacity: 0;
-    transition: all 0.1s;
-  }
-  .thinker-row:hover .thinker-remove { opacity: 1; }
-  .thinker-remove:hover { color: var(--ink); }
   .thinker-score {
     display: flex;
     align-items: center;
@@ -398,8 +243,8 @@
   .middle-inner {
     width: 100%;
     max-width: 720px;
-    position: relative;
   }
+  #resultPane { margin-top: 36px; }
 
   .q-title {
     font-size: 13px;
@@ -463,15 +308,19 @@
   }
   .q-trigger.open .chev { transform: rotate(180deg); }
 
+  .q-trigger-wrap {
+    position: relative;
+  }
+
   /* Question popover */
   .q-popover {
     position: absolute;
     top: calc(100% + 6px);
     left: 0; right: 0;
-    background: var(--surface);
+    background: #0a2244;
     border: 1px solid var(--border-2);
     border-radius: 10px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.25);
     z-index: 60;
     display: none;
     max-height: 380px;
@@ -496,7 +345,7 @@
   }
   .q-row:first-child { border-top: none; }
   .q-row:hover { background: var(--surface-2); }
-  .q-row.selected { background: #f4f4f5; }
+  .q-row.selected { background: rgba(255, 255, 255, 0.12); }
   .q-radio {
     width: 14px; height: 14px;
     border: 1.25px solid var(--ink-4);
@@ -540,23 +389,6 @@
     display: inline-block;
   }
 
-  /* Bottom bar: model + submit */
-  .actions-bar {
-    border-top: 1px solid var(--border);
-    background: var(--surface);
-    padding: 14px 28px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
-  }
-  .actions-bar-inner {
-    width: 100%;
-    max-width: 720px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: flex-end;
-  }
   .model-select {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -584,95 +416,28 @@
     box-shadow: 0 0 0 1px rgba(255,255,255,0.18) inset;
   }
   .model-opt.active:hover { background: #062a4a; }
-  .submit {
-    background: #062a4a;
-    color: #fff;
-    border: 1px solid rgba(255,255,255,0.22);
-    padding: 10px 24px;
-    font-size: 13.5px;
-    font-weight: 500;
-    border-radius: 10px;
-    transition: all 0.12s ease;
-    letter-spacing: -0.005em;
-    white-space: nowrap;
-  }
-  .submit:hover:not(:disabled) {
-    background: #0a3a64;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-  }
-  .submit:active:not(:disabled) { transform: translateY(0); box-shadow: none; }
-  .submit:disabled {
-    background: rgba(255,255,255,0.10);
-    border-color: rgba(255,255,255,0.15);
-    color: rgba(255,255,255,0.45);
-    cursor: not-allowed;
-  }
 
-  /* ============ RESULT STATE ============ */
-  .result-inner {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 40px 44px 60px;
-  }
-  .back-btn {
-    background: none;
-    border: none;
-    color: var(--ink-3);
-    font-size: 13px;
-    padding: 4px 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 28px;
-    transition: color 0.12s;
-  }
-  .back-btn:hover { color: var(--ink); }
-  .result-question {
-    font-size: 28px;
-    font-weight: 500;
-    line-height: 1.2;
-    letter-spacing: -0.022em;
-    color: var(--ink);
-    margin-bottom: 20px;
-    max-width: 28ch;
-  }
-  .result-meta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 26px;
-    padding-bottom: 22px;
-    border-bottom: 1px solid var(--border);
+  /* ============ RESULT BLOCKS ============ */
+  .result-block { margin-bottom: 32px; }
+  .result-block:last-child { margin-bottom: 0; }
+  .result-block-title {
     font-family: "Geist Mono", monospace;
-    font-size: 11px;
-    color: var(--ink-3);
-    letter-spacing: 0.02em;
-  }
-  .result-meta .mdot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--ink);
-  }
-  .result-meta[data-model="Claude"]  .mdot { background: #c87456; }
-  .result-meta[data-model="ChatGPT"] .mdot { background: #10a37f; }
-  .result-meta[data-model="Gemini"]  .mdot { background: #4285f4; }
-  .result-meta[data-model="Grok"]    .mdot { background: #1d1d1f; }
-  .result-meta .model-name {
-    color: var(--ink);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-4);
     font-weight: 500;
+    margin: 0 0 12px 0;
   }
-  .result-meta .dim { color: var(--ink-4); }
-
-  .result-body {
+  .result-block-body {
     font-size: 16px;
     line-height: 1.7;
     color: var(--ink-2);
     max-width: 64ch;
   }
-  .result-body p + p { margin-top: 1em; }
-  .result-body em { color: var(--ink); font-style: italic; }
-  .result-body strong { color: var(--ink); font-weight: 500; }
+  .result-block-body p + p { margin-top: 1em; }
+  .result-block-body em { color: var(--ink); font-style: italic; }
+  .result-block-body strong { color: var(--ink); font-weight: 500; }
 
   /* Loading */
   .loading {
@@ -717,26 +482,6 @@
   <!-- LEFT: thinkers panel -->
   <section class="col">
     <div class="panel-wrap">
-      <div class="add-thinker-wrap">
-        <button class="add-thinker" id="openPicker">
-          <span class="lhs">
-            <span class="ico">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            </span>
-            <span>Add thinker</span>
-          </span>
-          <span class="count" id="addCount">0 / 5</span>
-        </button>
-
-        <div class="popover" id="picker">
-          <div class="pop-search">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input id="pickerSearch" placeholder="Search thinkers" autocomplete="off"/>
-          </div>
-          <div class="pop-list" id="pickerList"></div>
-        </div>
-      </div>
-
       <div class="thinker-list" id="thinkerList"></div>
     </div>
   </section>
@@ -745,8 +490,7 @@
   <section class="col right-col">
     <div class="right-body">
 
-      <!-- COMPOSE -->
-      <div class="state" id="stateCompose">
+      <div class="state">
         <div class="compose-inner">
           <div class="top-bar">
             <div class="top-bar-inner">
@@ -761,37 +505,27 @@
           <div class="middle-section">
             <div class="middle-inner">
               <h3 class="q-title">Question</h3>
-              <button class="q-trigger" id="qTrigger">
-                <span class="label-text"><span class="placeholder">Select a question</span></span>
-                <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="q-popover" id="qPopover">
-                <div class="q-list" id="qList"></div>
+              <div class="q-trigger-wrap">
+                <button class="q-trigger" id="qTrigger">
+                  <span class="label-text"><span class="placeholder">Select a question</span></span>
+                  <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="q-popover" id="qPopover">
+                  <div class="q-list" id="qList"></div>
+                </div>
+              </div>
+              <div id="resultPane" hidden>
+                <section class="result-block">
+                  <h2 class="result-block-title" id="promptBlockTitle">What we asked Claude</h2>
+                  <div class="result-block-body" id="promptBody"></div>
+                </section>
+                <section class="result-block">
+                  <h2 class="result-block-title" id="responseBlockTitle">Claude's response</h2>
+                  <div class="result-block-body" id="resultBody"></div>
+                </section>
               </div>
             </div>
           </div>
-          <div class="actions-bar">
-            <div class="actions-bar-inner">
-              <button class="submit" id="submitBtn" disabled>Submit</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RESULT -->
-      <div class="state hidden" id="stateResult">
-        <div class="result-inner">
-          <button class="back-btn" id="backBtn">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-            Back
-          </button>
-          <h1 class="result-question" id="resultQuestion"></h1>
-          <div class="result-meta" id="resultMeta">
-            <span class="mdot"></span>
-            <span class="model-name" id="resultModelName">Claude</span>
-            <span class="dim" id="resultStamp"></span>
-          </div>
-          <div class="result-body" id="resultBody"></div>
         </div>
       </div>
 
@@ -806,40 +540,20 @@
 
   // ============ STATE ============
   const state = {
-    selectedThinkers: ['trump', 'aoc', 'friedman'],
     selectedQuestion: null,
     selectedModel: 'Claude',
-    view: 'compose',
     lastScores: {},
-    pickerQuery: '',
-    currentJobId: null,
   };
 
-  const JOB_KEY = 'nemo:job';
-
-  const getThinker  = id => THINKERS.find(t => t.id === id);
   const getQuestion = id => QUESTIONS.find(q => q.id === id);
-
-  const wait = ms => new Promise(r => setTimeout(r, ms));
-  function nowStamp() {
-    const d = new Date();
-    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-  }
 
   // ============ LEFT: PANEL ============
   function renderThinkers() {
     const list = document.getElementById('thinkerList');
-    document.getElementById('addCount').textContent = `${state.selectedThinkers.length} / 5`;
-
-    if (state.selectedThinkers.length === 0) {
-      list.innerHTML = `<div class="empty-state"><b>No thinkers yet.</b><br>Add up to five.</div>`;
-      return;
-    }
-
-    list.innerHTML = state.selectedThinkers.map((id, i) => {
-      const t = getThinker(id);
-      const has = state.lastScores[id] !== undefined;
-      const s = state.lastScores[id];
+    list.innerHTML = THINKERS.map((t, i) => {
+      const raw = state.lastScores[t.id];
+      const has = raw !== null && raw !== undefined;
+      const s = has ? raw : 0;
       const pct = has ? s * 10 : 0;
       return `
         <div class="thinker-row" style="animation-delay:${i * 0.04}s">
@@ -848,7 +562,6 @@
               <div class="thinker-name">${t.name}</div>
               <div class="thinker-era">${t.era}</div>
             </div>
-            <button class="thinker-remove" data-remove="${t.id}" title="Remove">✕</button>
           </div>
           <div class="thinker-score">
             <div class="score-num ${has ? '' : 'pending'}" data-score-for="${t.id}">
@@ -860,91 +573,10 @@
           </div>
         </div>`;
     }).join('');
-
-    list.querySelectorAll('[data-remove]').forEach(btn => {
-      btn.addEventListener('click', e => {
-        const id = e.currentTarget.dataset.remove;
-        state.selectedThinkers = state.selectedThinkers.filter(x => x !== id);
-        renderThinkers();
-        renderPicker();
-      });
-    });
   }
 
-  // ============ PICKER ============
-  function renderPicker() {
-    const list = document.getElementById('pickerList');
-    const q = state.pickerQuery.trim().toLowerCase();
-    const filtered = THINKERS.filter(t =>
-      !q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q)
-    );
-
-    if (filtered.length === 0) {
-      list.innerHTML = `<div class="empty-state" style="padding:24px">No matches.</div>`;
-      return;
-    }
-
-    list.innerHTML = filtered.map(t => {
-      const selected = state.selectedThinkers.includes(t.id);
-      const atMax = !selected && state.selectedThinkers.length >= 5;
-      return `
-        <div class="pop-opt ${selected ? 'selected' : ''} ${atMax ? 'disabled' : ''}" data-tid="${t.id}">
-          <div class="pop-check"></div>
-          <div class="pop-opt-meta">
-            <div class="pop-opt-name">${t.name}</div>
-            <div class="pop-opt-era">${t.era} · ${t.desc}</div>
-          </div>
-        </div>`;
-    }).join('');
-
-    list.querySelectorAll('.pop-opt').forEach(el => {
-      el.addEventListener('click', () => {
-        if (el.classList.contains('disabled')) return;
-        const id = el.dataset.tid;
-        if (state.selectedThinkers.includes(id)) {
-          state.selectedThinkers = state.selectedThinkers.filter(x => x !== id);
-        } else {
-          if (state.selectedThinkers.length >= 5) return;
-          state.selectedThinkers.push(id);
-        }
-        renderPicker();
-        renderThinkers();
-      });
-    });
-  }
-
-  function openPicker() {
-    document.getElementById('picker').classList.add('open');
-    renderPicker();
-    setTimeout(() => document.getElementById('pickerSearch').focus(), 30);
-  }
-  function closePicker() {
-    document.getElementById('picker').classList.remove('open');
-    state.pickerQuery = '';
-    document.getElementById('pickerSearch').value = '';
-  }
-
-  document.getElementById('openPicker').addEventListener('click', e => {
-    e.stopPropagation();
-    const isOpen = document.getElementById('picker').classList.contains('open');
-    if (isOpen) closePicker(); else openPicker();
-  });
-  document.getElementById('pickerSearch').addEventListener('input', e => {
-    state.pickerQuery = e.target.value;
-    renderPicker();
-  });
-  document.addEventListener('click', e => {
-    const pop = document.getElementById('picker');
-    if (!pop.classList.contains('open')) return;
-    if (!pop.contains(e.target) && !document.getElementById('openPicker').contains(e.target)) {
-      closePicker();
-    }
-  });
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      closePicker();
-      closeQPopover();
-    }
+    if (e.key === 'Escape') closeQPopover();
   });
 
   // ============ COMPOSE: QUESTIONS ============
@@ -965,8 +597,8 @@
         state.selectedQuestion = Number(el.dataset.qid);
         renderQuestions();
         updateQTrigger();
-        updateSubmit();
         closeQPopover();
+        loadResponse();
       });
     });
   }
@@ -1009,14 +641,10 @@
     document.querySelectorAll('#modelSelect .model-opt').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     state.selectedModel = btn.dataset.model;
+    if (state.selectedQuestion !== null) loadResponse();
   });
 
-  function updateSubmit() {
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = !(state.selectedQuestion !== null && state.selectedThinkers.length > 0);
-  }
-
-  // ============ SUBMIT (background job + poll, resumable across navigation) ============
+  // ============ RESPONSE (instant CSV lookup) ============
   function escapeHtml(s) {
     return String(s)
       .replace(/&/g, '&amp;')
@@ -1031,132 +659,49 @@
       .join('');
   }
 
-  function showResultLoading(questionText, model) {
-    state.view = 'result';
-    document.getElementById('stateCompose').classList.add('hidden');
-    document.getElementById('stateResult').classList.remove('hidden');
-    document.getElementById('resultQuestion').textContent = questionText;
-    document.getElementById('resultMeta').setAttribute('data-model', model);
-    document.getElementById('resultModelName').textContent = model;
-    document.getElementById('resultStamp').textContent = `· ${nowStamp()}`;
+  function applyProbeResponse(data, model) {
+    document.getElementById('promptBlockTitle').textContent = `What we asked ${model}`;
+    document.getElementById('responseBlockTitle').textContent = `${model}'s response`;
+    document.getElementById('promptBody').innerHTML = renderResponse(data.prompt_given || '');
+    document.getElementById('resultBody').innerHTML = renderResponse(data.response || '');
+    state.lastScores = data.scores || {};
+    renderThinkers();
+    animateScores(state.lastScores);
+  }
+
+  async function loadResponse() {
+    if (state.selectedQuestion === null) return;
+    const q = getQuestion(state.selectedQuestion);
+    const model = state.selectedModel;
+    const modelId = model.toLowerCase();
+
+    const pane = document.getElementById('resultPane');
+    pane.hidden = false;
+    document.getElementById('promptBlockTitle').textContent = `What we asked ${model}`;
+    document.getElementById('responseBlockTitle').textContent = `${model}'s response`;
+    document.getElementById('promptBody').innerHTML = '';
     document.getElementById('resultBody').innerHTML = `
       <div class="loading">
         <span class="ld-dot"></span><span class="ld-dot"></span><span class="ld-dot"></span>
-        <span style="margin-left:6px">asking ${model}, then judging</span>
+        <span style="margin-left:6px">loading recorded response</span>
       </div>`;
-  }
-
-  function applyJobResult(data) {
-    document.getElementById('resultBody').innerHTML = renderResponse(data.response);
-    const scoresById = {};
-    state.selectedThinkers.forEach(id => {
-      const thinker = getThinker(id);
-      if (!thinker) return;
-      scoresById[id] = Number(data.scores?.[thinker.name] ?? 5);
-    });
-    state.lastScores = scoresById;
-    renderThinkers();
-    animateScores(scoresById);
-  }
-
-  async function pollJob(jobId) {
-    while (true) {
-      let res;
-      try {
-        res = await fetch(`/probe/status/${jobId}`);
-      } catch {
-        await wait(2000);
-        continue; // network blip, retry
-      }
-      if (state.currentJobId !== jobId) return;     // superseded by a newer submit
-      if (!res.ok) {
-        localStorage.removeItem(JOB_KEY);
-        document.getElementById('resultBody').innerHTML =
-          `<p style="color:#a8331f">Job expired or server restarted. Try again.</p>`;
-        return;
-      }
-      const data = await res.json();
-      if (state.currentJobId !== jobId) return;
-      if (data.status === 'done') {
-        localStorage.removeItem(JOB_KEY);
-        applyJobResult(data);
-        return;
-      }
-      if (data.status === 'error') {
-        localStorage.removeItem(JOB_KEY);
-        document.getElementById('resultBody').innerHTML =
-          `<p style="color:#a8331f">Error: ${escapeHtml(data.error || 'unknown')}</p>`;
-        return;
-      }
-      await wait(1500);
-    }
-  }
-
-  async function handleSubmit() {
-    if (state.selectedQuestion === null || state.selectedThinkers.length === 0) return;
-    const q = getQuestion(state.selectedQuestion);
-    const model = state.selectedModel;
-
-    showResultLoading(q.text, model);
-    state.selectedThinkers.forEach(id => { state.lastScores[id] = undefined; });
+    state.lastScores = {};
     renderThinkers();
 
     try {
-      const thinkerNames = state.selectedThinkers.map(id => getThinker(id).name);
-      const res = await fetch('/probe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q.text, model, thinkers: thinkerNames }),
-      });
+      const res = await fetch(`/api/probe_response?question_id=${encodeURIComponent(q.id)}&model=${encodeURIComponent(modelId)}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `request failed (${res.status})`);
-
-      state.currentJobId = data.job_id;
-      localStorage.setItem(JOB_KEY, JSON.stringify({
-        jobId: data.job_id,
-        questionId: q.id,
-        model,
-        thinkerIds: [...state.selectedThinkers],
-      }));
-
-      await pollJob(data.job_id);
+      applyProbeResponse(data, model);
     } catch (err) {
       document.getElementById('resultBody').innerHTML =
         `<p style="color:#a8331f">Error: ${escapeHtml(err.message)}</p>`;
     }
   }
 
-  function resumeActiveJob() {
-    const stored = localStorage.getItem(JOB_KEY);
-    if (!stored) return;
-    let meta;
-    try { meta = JSON.parse(stored); } catch { localStorage.removeItem(JOB_KEY); return; }
-    if (!meta || !meta.jobId) { localStorage.removeItem(JOB_KEY); return; }
-
-    if (Array.isArray(meta.thinkerIds) && meta.thinkerIds.length) {
-      state.selectedThinkers = meta.thinkerIds.filter(id => getThinker(id));
-    }
-    if (meta.model) state.selectedModel = meta.model;
-    if (meta.questionId != null) state.selectedQuestion = meta.questionId;
-
-    document.querySelectorAll('#modelSelect .model-opt').forEach(b => {
-      b.classList.toggle('active', b.dataset.model === state.selectedModel);
-    });
-
-    renderThinkers();
-    renderQuestions();
-    updateQTrigger();
-    updateSubmit();
-
-    const q = getQuestion(state.selectedQuestion);
-    if (!q) { localStorage.removeItem(JOB_KEY); return; }
-    state.currentJobId = meta.jobId;
-    showResultLoading(q.text, state.selectedModel);
-    pollJob(meta.jobId);
-  }
-
   function animateScores(scores) {
     Object.entries(scores).forEach(([id, target], idx) => {
+      if (target === null || target === undefined) return;
       const el = document.querySelector(`[data-score-for="${id}"]`);
       if (!el) return;
       const delay = idx * 80;
@@ -1171,22 +716,6 @@
     });
   }
 
-  document.getElementById('backBtn').addEventListener('click', () => {
-    state.view = 'compose';
-    document.getElementById('stateResult').classList.add('hidden');
-    document.getElementById('stateCompose').classList.remove('hidden');
-  });
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.target.matches('input')) {
-      if (state.view === 'compose' && !document.getElementById('submitBtn').disabled) {
-        handleSubmit();
-      }
-    }
-  });
-
-  document.getElementById('submitBtn').addEventListener('click', handleSubmit);
-
   // ============ INIT ============
   async function initFromServer() {
     const [thinkers, questions] = await Promise.all([
@@ -1195,12 +724,8 @@
     ]);
     THINKERS = thinkers;
     QUESTIONS = questions;
-    // Drop any default-selected thinker ids that the server didn't return.
-    state.selectedThinkers = state.selectedThinkers.filter(id => getThinker(id));
     renderThinkers();
     renderQuestions();
-    updateSubmit();
-    resumeActiveJob();
   }
   initFromServer().catch(err => {
     console.error('Failed to load site data:', err);
