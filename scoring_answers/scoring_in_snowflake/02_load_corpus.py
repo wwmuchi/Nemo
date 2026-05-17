@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-CORPUS_ROOT = pathlib.Path(__file__).resolve().parent / "ideologue_corpus"
+CORPUS_ROOT = pathlib.Path(__file__).resolve().parent.parent / "ideologue_corpus"
 BATCH = 200
 TARGET_TOKENS = 500
 OVERLAP_TOKENS = 100

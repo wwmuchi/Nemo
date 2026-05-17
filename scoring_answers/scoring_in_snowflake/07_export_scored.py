@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 OUT_CSV = (
-    pathlib.Path(__file__).resolve().parent.parent
+    pathlib.Path(__file__).resolve().parent.parent.parent
     / "political_questions"
     / "main_bot_answering_questions"
     / "responses_export_enriched_scored.csv"

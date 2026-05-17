@@ -17,7 +17,7 @@ load_dotenv()
 csv.field_size_limit(sys.maxsize)
 
 CSV_PATH = (
-    pathlib.Path(__file__).resolve().parent.parent
+    pathlib.Path(__file__).resolve().parent.parent.parent
     / "political_questions"
     / "main_bot_answering_questions"
     / "responses_export_enriched.csv"
